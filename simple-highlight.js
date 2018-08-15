@@ -13,6 +13,12 @@ var SimpleHighlight = {
     'console': 'g_name',
     'return' :'keyword',
     'if': 'keyword',
+    'for': 'keyword',
+    'break': 'keyword',
+    'case': 'keyword',
+    'do': 'keyword',
+    'while': 'keyword',
+    'swtich': 'keyword',
     'else': 'keyword',
     'const': 'def',
     'var': 'def',
@@ -31,6 +37,7 @@ var SimpleHighlight = {
   isClass: false,
   isArguments: false,
   isFunctionDefinition: false,
+  isComment: false,
 };
 
 
@@ -78,7 +85,21 @@ SimpleHighlight.processLine = function(line) {
   var word = [];
   var wordString;
   var nextWordModifier;
-  for (var i=0; i < line.length; i++) {
+  var startFrom = 0;
+
+  //Check if line commented
+  if (this.isComment) {
+    var commentEnd = line.substr(i).indexOf('*/');
+    if (commentEnd === -1) {
+      return this.applyStyle(line, 'comment');
+    } else {
+      this.isComment = false;
+      startFrom = commentEnd + 2;
+      processed.push(this.applyStyle(line.substr(0, startFrom), 'comment'));
+    }
+  }
+
+  for (var i=startFrom; i < line.length; i++) {
     char = line[i];
     code = char.charCodeAt(0);
     if (this.isWordChar(char)) {
@@ -107,6 +128,29 @@ SimpleHighlight.processLine = function(line) {
       }
 
       switch (char) {
+        case '/':
+          var next = line[i+1];
+          if (next) {
+            if (next === '/') {
+              // get all the rest of line and apply comment style
+              processed.push(this.applyStyle(line.substr(i), 'comment'));
+              // Exit line processing
+              i = line.length;
+              continue;
+            } else if (next === '*') { // Multiline comment
+              // If comment not ended on same line
+              if (line.substr(i).indexOf('*/') === -1) {
+                this.isComment = true;
+                processed.push(this.applyStyle(line.substr(i), 'comment'));
+                // Exit line processing
+                i = line.length;
+                continue;
+              }
+
+            }
+          }
+          break;
+
         case '(':
           if (this.isClassMethod() || this.isFunctionDefinition) {
             this.isArguments = true;
@@ -216,6 +260,7 @@ SimpleHighlight.reset = function() {
   this.isClass = false;
   this.isArguments = false;
   this.isFunctionDefinition = false;
+  this.isComment = false;
 }
 
 SimpleHighlight.appendStyles = function(themes) {
@@ -282,6 +327,8 @@ SimpleHighlight.themes = [{
     blue: '#67d8ef',
   },
   styles: {
+    comment: 'yellow',
+    self: 'orange',
     def: 'blue',
     args: 'orange',
     method: 'green',
@@ -306,6 +353,7 @@ SimpleHighlight.themes = [{
     grey: '#555'
   },
   styles: {
+    self: 'orange',
     def: 'red',
     args: 'orange|b',
     method: 'purple',

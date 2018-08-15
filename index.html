@@ -2,41 +2,46 @@
 <html>
 <head>
     <title>Fast Highlight</title>
-    <script type="text/javascript" src="simple-highlight.min.js"></script>
+    <script type="text/javascript" src="simple-highlight.js"></script>
 </head>
 <body>
 
 <code class="simple-highlight sh-theme-dark"><pre>
-class Memory {
-  constructor(size) {
-    if (size > 10) {
-      this.isBig = true;
-    }
-    this._memory = new Array(size).fill('00');
-  }
 
-  getCopy() {
-    var variable = 'Var';
-    return this._memory.slice()
+SimpleHighlight.highlightCodeNode = function(codeNode) {
+  var preNode = codeNode.firstElementChild;
+  // If pre tag wasnt found inside code
+  if (preNode.tagName.toLowerCase() !== 'pre') {
+    return;
   }
-
-  reset(newMemoryArr) {
-    const t = () => {
-      return 'test';
-    };
-    this._memory = newMemoryArr;
+  /* this.reset();
+    var lines = preNode.innerText.split('\n');
+  */ 
+  var readyLines = [];
+  for (var line = 0; line < lines.length; line++) {
+    readyLines.push(this.processLine(lines[line]));
   }
+  preNode.innerHTML = readyLines.join('\n');
 
-  get(idx) {
-    return this._memory[idx];
-  }
-
-  set(idx, val) {
-    this._memory[idx] = val;
+  //If no theme selected - apply default
+  if (codeNode.className.indexOf(this.themePrefix) === -1) {
+    codeNode.className = codeNode.className + ' ' + this.themePrefix + 'light';
   }
 }
 
-console.log('test');
+SimpleHighlight.highlightOnPage = function() {
+  // Appned styles
+  this.appendStyles(this.themes);
+
+  var codeNodes = document.querySelectorAll('code' + this.mainClass);
+  if (!codeNodes.length) {
+    return;
+  }
+
+  for (var i = 0; i < codeNodes.length; i++) {
+    this.highlightCodeNode(codeNodes[i]);
+  }
+};
 
 </pre></code>
 
