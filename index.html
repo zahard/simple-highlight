@@ -9,18 +9,21 @@
 <code class="simple-highlight sh-theme-dark"><pre>
 class Memory {
   constructor(size) {
-    if (size) {
-      this.len = 87;
+    if (size > 10) {
+      this.isBig = true;
     }
     this._memory = new Array(size).fill('00');
   }
 
   getCopy() {
-    var text = '900';
+    var variable = 'Var';
     return this._memory.slice()
   }
 
   reset(newMemoryArr) {
+    const t = () => {
+      return 'test';
+    };
     this._memory = newMemoryArr;
   }
 
@@ -33,17 +36,20 @@ class Memory {
   }
 }
 
-function hello(text) {
-  return 'text' + 'text';
-}
-
-var help = hello();
-
-const t = () => {};
+console.log('test');
 
 </pre></code>
 
+<code class="simple-highlight"><pre>
+function hello(text) {
+  return 'text' + 'text';
+}
+var help = hello();
+var num = 10 + 15;
+console.log(num);
+</pre></code>
+
       
-    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="simple-highlight.js"></script>
 </body>
 </html>
