@@ -8,6 +8,11 @@
 
 <code class="simple-highlight sh-theme-dark"><pre>
 
+var muiltiline = `This is
+multiline
+string`;
+
+
 SimpleHighlight.highlightCodeNode = function(codeNode) {
   var preNode = codeNode.firstElementChild;
   // If pre tag wasnt found inside code
@@ -42,6 +47,61 @@ SimpleHighlight.highlightOnPage = function() {
     this.highlightCodeNode(codeNodes[i]);
   }
 };
+
+
+SimpleHighlight.themes = [{
+  name: 'dark',
+  background: "#282923",
+  text: '#f7f7f7',
+  colors: {
+    orange: '#fd9621',
+    green: '#a6e22c',
+    darkgreen: '#438c26',
+    purple: '#ac80ff',
+    yellow: '#e7db74',
+    red: '#f92472',
+    blue: '#67d8ef',
+    grey: '#888',
+  },
+  styles: {
+    comment: 'darkgreen',
+    self: 'orange',
+    def: 'blue',
+    args: 'orange',
+    method: 'green',
+    number: 'purple',
+    string: 'yellow',
+    operand: 'red',
+    keyword: 'red',
+    b_name: 'blue|i',
+    g_name: 'blue|i'
+  }
+}, {
+  name: 'light',
+  background: '#eee',
+  text: '#222',
+  colors: {
+    orange: '#fd9621',
+    green: '#a6e22c',
+    purple: '#ac80ff',
+    yellow: '#e7db74',
+    red: '#f92472',
+    blue: '#67d8ef',
+    grey: '#555'
+  },
+  styles: {
+    self: 'orange',
+    def: 'red',
+    args: 'orange|b',
+    method: 'purple',
+    number: 'green',
+    string: 'green',
+    operand: 'red',
+    keyword: 'red',
+    b_name: 'grey',
+    g_name: 'grey'
+  }
+}];
 
 </pre></code>
 

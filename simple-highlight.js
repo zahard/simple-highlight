@@ -40,7 +40,6 @@ var SimpleHighlight = {
   isComment: false,
 };
 
-
 SimpleHighlight.highlightCodeNode = function(codeNode) {
   var preNode = codeNode.firstElementChild;
   // If pre tag wasnt found inside code
@@ -89,7 +88,7 @@ SimpleHighlight.processLine = function(line) {
 
   //Check if line commented
   if (this.isComment) {
-    var commentEnd = line.substr(i).indexOf('*/');
+    var commentEnd = line.indexOf('*/');
     if (commentEnd === -1) {
       return this.applyStyle(line, 'comment');
     } else {
@@ -98,6 +97,17 @@ SimpleHighlight.processLine = function(line) {
       processed.push(this.applyStyle(line.substr(0, startFrom), 'comment'));
     }
   }
+
+  if (this.isMultilineString) {
+    var stringEnd = line.substr(i).indexOf('`');
+    if (stringEnd === -1) {
+      return this.applyStyle(line, 'string');
+    } else {
+      this.isMultilineString = false;
+      startFrom = stringEnd + 2;
+      processed.push(this.applyStyle(line.substr(0, startFrom), 'string'));
+    }
+  } 
 
   for (var i=startFrom; i < line.length; i++) {
     char = line[i];
@@ -128,6 +138,27 @@ SimpleHighlight.processLine = function(line) {
       }
 
       switch (char) {
+        // Strings
+        case '"':
+        case "'":
+        case "`":
+          // Find next same char and close this range as string
+          var closeString = line.substr(i+1).indexOf(char);
+          if (closeString !== -1) {
+              processed.push(this.applyStyle(line.substr(i, closeString+2), 'string'));
+              i += closeString+1;
+              continue;
+          } else {
+            if (char === '`') {
+              this.isMultilineString = true;
+            }
+            processed.push(this.applyStyle(line.substr(i), 'string'));
+            // Exit line processing
+            i = line.length;
+            continue;
+          }
+          break;
+
         case '/':
           var next = line[i+1];
           if (next) {
@@ -154,6 +185,8 @@ SimpleHighlight.processLine = function(line) {
         case '(':
           if (this.isClassMethod() || this.isFunctionDefinition) {
             this.isArguments = true;
+            // Recet function and class names
+            nextWordModifier = null;
           }
           break;
         case ')':
@@ -217,9 +250,14 @@ SimpleHighlight.getWord = function(word, customStyle) {
     } else if (/^[0-9]+$/.test(word)) {
       // Numbers
       style = 'number'
-    } else if(/^[\'\"].*[\'\"]+$/.test(word)) {
-      // Strings
-      style = 'string'
+    }
+  }
+
+  if(!style) {
+    var firstLetter = word[0];
+    // Confider as global object name
+    if (firstLetter === firstLetter.toUpperCase()) {
+      style = 'g_name';
     }
   }
 
@@ -243,7 +281,7 @@ SimpleHighlight.nextWordRule = function(keyword) {
 }
 
 SimpleHighlight.isWordChar = function(char) {
-  return /[a-zA-Z0-9\_\-\'\"]/.test(char)
+  return /[a-zA-Z0-9\_\-]/.test(char)
 };
 
 SimpleHighlight.getCharStyle = function(char) {
@@ -321,13 +359,15 @@ SimpleHighlight.themes = [{
   colors: {
     orange: '#fd9621',
     green: '#a6e22c',
+    darkgreen: '#438c26',
     purple: '#ac80ff',
     yellow: '#e7db74',
     red: '#f92472',
     blue: '#67d8ef',
+    grey: '#888',
   },
   styles: {
-    comment: 'yellow',
+    comment: 'darkgreen',
     self: 'orange',
     def: 'blue',
     args: 'orange',
