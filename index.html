@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fast Highlight</title>
+  <script type="text/javascript" src="simple-highlight.js"></script>
+  <style>
+    h1, h3 {
+      text-align: center;
+      color: #333;
+      line-height: 1.6;
+      font-family: Arial;
+      margin: 10px 0;
+    }
+    h1 { font-size: 28px; }
+    h3 { 
+      border-radius: 2px;
+      font-size: 20px;
+      margin:10px 5px;
+      font-weight: normal;
+     }
+    .dark h3{
+      background: #333;
+      color: #fefefe;
+    }
+    .light h3{
+      background: #eee;
+      color: #333;
+    } 
+    .themes {
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+    }
+    code {
+      float: left;
+      margin-right: 15px;
+      width:500px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Simple Highlight themes examples</h1>
+<div class="themes">
+  <div class="theme dark">
+    <h3>Dark</h3>
+    <code class="simple-highlight sh-theme-dark"><pre>
+// Factorial example function
+function factorial(n) {
+  if (n == 1) {
+    return 1;
+  }
+  return n * factorial(n - 1);
+}
+/**
+ * Good doggo class
+ */
+class Dog extends Animal {
+  bark(times) {
+    const text = new Array(times).fill('Bark!');
+    console.log(text);
+  }
+
+  isGoodBoy() {
+    return true;
+  }
+}
+
+const getLongText = () => {
+  return `This is
+multiline
+string`;
+}
+
+// Object Methods highlighting
+var API = {};
+API.getJson = function() {
+  // ...
+}
+
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <h3>Light</h3>
+    <code class="simple-highlight"><pre>
+// Factorial example function
+function factorial(n) {
+  if (n == 1) {
+    return 1;
+  }
+  return n * factorial(n - 1);
+}
+/**
+ * Good doggo class
+ */
+class Dog extends Animal {
+  bark(times) {
+    const text = new Array(times).fill('Bark!');
+    console.log(text);
+  }
+
+  isGoodBoy() {
+    return true;
+  }
+}
+
+const getLongText = () => {
+  return `This is
+multiline
+string`;
+}
+
+// Object Methods highlighting
+var API = {};
+API.getJson = function() {
+  // ...
+}
+    </pre></code>
+  </div>
+</div>
+</body>
+</html>

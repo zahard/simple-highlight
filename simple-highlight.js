@@ -5,6 +5,8 @@ var SimpleHighlight = {
   themePrefix: 'sh-theme-',
   keywords: {
     'class': 'b_name',
+    'extends': 'keyword',
+    'implements': 'keyword',
     'function': 'b_name',
     'this': 'self',
     'constructor': 'b_name',
@@ -27,6 +29,8 @@ var SimpleHighlight = {
   },
   modifiers: {
     'class': 'method',
+    'extends': 'method',
+    'implements': 'method',
     'function': 'method',
     'new': 'g_name',
     'console': 'g_name',
@@ -57,7 +61,7 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
 
   // Remove trailing empty lines
   for (line = line-1; line > 0; line--) {
-    if(!readyLines[line]) {
+    if (!readyLines[line].length || /^\s+$/.test(readyLines[line])) {
       readyLines.pop();
     } else {
       break;
@@ -141,7 +145,7 @@ SimpleHighlight.processLine = function(line) {
         // End of word
         wordString = word.join('');
         // Function call
-        if (char == '(' && ! this.isFunctionDefinition) {
+        if (char == '(' && ! this.isFunctionDefinition && !this.isClassMethod()) {
           nextWordModifier = 'func';
         }
 
@@ -278,10 +282,11 @@ SimpleHighlight.isClassMethod = function() {
 
 SimpleHighlight.getWord = function(word, customStyle) {
   var style = this.keywords[word] || customStyle; 
+
   if (!style) {
     if (this.isArguments) {
       style = 'args';
-    } else  if (this.isClassMethod()) {
+    } else if (this.isClassMethod()) {
       // Methods
       style = 'method';
     } else if (/^\-?[0-9]+$/.test(word)) {
@@ -293,9 +298,9 @@ SimpleHighlight.getWord = function(word, customStyle) {
   }
 
   if (!style) {
-    var firstLetter = word[0];
-    // Confider as global object name
-    if (firstLetter === firstLetter.toUpperCase()) {
+    var firstCharCode = word.charCodeAt(0);
+    // Upper case letter consiger as global object
+    if (firstCharCode > 64 && firstCharCode < 91) {
       style = 'g_name';
     }
   }
@@ -320,7 +325,7 @@ SimpleHighlight.nextWordRule = function(keyword) {
 }
 
 SimpleHighlight.isWordChar = function(char) {
-  return /[a-zA-Z0-9\_\-]/.test(char)
+  return /[a-zA-Z0-9\_]/.test(char)
 };
 
 SimpleHighlight.getCharStyle = function(char) {
