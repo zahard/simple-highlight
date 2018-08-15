@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Fast Highlight</title>
-
+    <script type="text/javascript" src="simple-highlight.min.js"></script>
 </head>
 <body>
 
@@ -49,7 +49,40 @@ var num = 10 + 15;
 console.log(num);
 </pre></code>
 
+
+<code class="simple-highlight"><pre>
+class Memory {
+  constructor(size) {
+    if (size > 10) {
+      this.isBig = true;
+    }
+    this._memory = new Array(size).fill('00');
+  }
+
+  getCopy() {
+    var variable = 'Var';
+    return this._memory.slice()
+  }
+
+  reset(newMemoryArr) {
+    const t = () => {
+      return 'test';
+    };
+    this._memory = newMemoryArr;
+  }
+
+  get(idx) {
+    return this._memory[idx];
+  }
+
+  set(idx, val) {
+    this._memory[idx] = val;
+  }
+}
+
+console.log('test');
+
+</pre></code>
       
-    <script type="text/javascript" src="simple-highlight.js"></script>
 </body>
 </html>
