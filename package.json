@@ -1,0 +1,22 @@
+{
+  "name": "simple-hilight",
+  "version": "1.0.0",
+  "description": "Simple syntax highlighter",
+  "main": "simple-highlight.js",
+  "scripts": {
+    "build": "uglifyjs simple-highlight.js -c -m -o simple-highlight.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zahard/simple-highlight.git"
+  },
+  "author": "Zakhar Portianov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zahard/simple-highlight/issues"
+  },
+  "homepage": "https://github.com/zahard/simple-highlight#readme",
+  "devDependencies": {
+    "uglify-js": "^3.4.7"
+  }
+}

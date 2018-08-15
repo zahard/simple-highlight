@@ -121,6 +121,24 @@ SimpleHighlight.processLine = function(line) {
       if (wordStart) {
         // End of word
         wordString = word.join('');
+        // Function call
+        if (char == '(' && ! this.isFunctionDefinition) {
+          nextWordModifier = 'func';
+        }
+
+        // Object method assignment
+        if (processed[processed.length-1] == '.') {
+          // Find next not space char
+          var nextChar = this.findNextCharIndex(line, i+1);
+          // If its object propety assignemt
+          if (line[nextChar] == '=') {
+            var nextWordStart = this.findNextCharIndex(line, nextChar + 1);
+            if (line.substr(nextWordStart, 8) === 'function') {
+              nextWordModifier = 'method';
+            }
+          }
+
+        }
         processed.push(this.getWord(wordString, nextWordModifier));
         nextWordModifier = this.nextWordRule(wordString);
         wordStart = false;
@@ -207,17 +225,9 @@ SimpleHighlight.processLine = function(line) {
         case '=':
           var next = line[i+1];
           if (next && next === '>') {
-            var nextChar;
-            var k = 1;
-            while (!nextChar) {
-              if (! (/\s/.test(line[i+1+k]))) {
-                nextChar = line[i+1+k]
-              } else {
-                k++;
-              }
-            }
+            var nextChar = this.findNextCharIndex(line, i+2);
             // Is arrow function
-            if (nextChar === '{') {
+            if (line[nextChar] === '{') {
               processed.push(this.applyStyle('=>', 'b_name'));
               //skip next char
               i++;
@@ -235,6 +245,14 @@ SimpleHighlight.processLine = function(line) {
 }
 
 
+SimpleHighlight.findNextCharIndex = function(line, start) {
+  for (var i = start; i < line.length; i++) {
+    if (!(/\s/.test(line[i]))) {
+      return i;
+    }
+  }
+}
+
 SimpleHighlight.isClassMethod = function() {
   return this.isClass && this.classLevel === this.openBlockLevel;
 }
@@ -250,10 +268,12 @@ SimpleHighlight.getWord = function(word, customStyle) {
     } else if (/^\-?[0-9]+$/.test(word)) {
       // Numbers
       style = 'number'
+    } else if (/^true|false$/.test(word)) {
+      style = 'boolean';
     }
   }
 
-  if(!style) {
+  if (!style) {
     var firstLetter = word[0];
     // Confider as global object name
     if (firstLetter === firstLetter.toUpperCase()) {
@@ -285,7 +305,7 @@ SimpleHighlight.isWordChar = function(char) {
 };
 
 SimpleHighlight.getCharStyle = function(char) {
-  if (/^[\+\-\*\|\/\>\<\=]+$/.test(char)) {
+  if (/^[\!\&\+\-\*\|\/\>\<\=]+$/.test(char)) {
     return this.applyStyle(char, 'operand');
   } else {
     return char;
@@ -309,8 +329,9 @@ SimpleHighlight.appendStyles = function(themes) {
   }
 
   var cssArr = [];
-  cssArr.push('code'+this.mainClass+' { font-size: 16px; padding: 15px; overflow-x: auto; display: block; margin: 5px; border-radius:4px}');
-  cssArr.push(this.mainClass + ' > pre { margin: 0}');
+  cssArr.push('code'+this.mainClass+' { font-size: 16px; padding: 15px;');
+  cssArr.push('overflow-x: auto; display: block; margin: 5px; border-radius:4px}');
+  cssArr.push(this.mainClass + ' > pre { margin: 0;font-family: Monospace; line-height:1.4;}');
   for (var t = 0; t < themes.length; t++) {
       this.createThemeCss(themes[t], cssArr);
   }
@@ -377,32 +398,41 @@ SimpleHighlight.themes = [{
     operand: 'red',
     keyword: 'red',
     b_name: 'blue|i',
-    g_name: 'blue|i'
+    g_name: 'blue|i',
+    func: 'blue',
+    boolean: 'purple'
   }
 }, {
   name: 'light',
   background: '#eee',
-  text: '#222',
+  text: '#333',
   colors: {
+    lightblue: '#07a',
     orange: '#fd9621',
-    green: '#a6e22c',
-    purple: '#ac80ff',
+    green: '#690',
+    purple: '#734eb9',
     yellow: '#e7db74',
-    red: '#f92472',
-    blue: '#67d8ef',
-    grey: '#555'
+    red: '#DD4A68',
+    blue: '#444dd0',
+    grey: '#333',
+    brown: '#a67f59',
+    num: '#905',
+    lightgrey:'#708090'
   },
   styles: {
-    self: 'orange',
-    def: 'red',
-    args: 'orange|b',
-    method: 'purple',
-    number: 'green',
+    comment:'lightgrey',
+    self: 'lightblue',
+    def: 'lightblue',
+    args: 'grey',
+    method: 'red',
+    number: 'num',
     string: 'green',
-    operand: 'red',
-    keyword: 'red',
-    b_name: 'grey',
-    g_name: 'grey'
+    operand: 'brown',
+    keyword: 'lightblue',
+    b_name: 'lightblue',
+    g_name: 'grey',
+    func: 'red',
+    boolean: 'num'
   }
 }];
 

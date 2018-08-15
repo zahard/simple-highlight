@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fast Highlight</title>
+    <script type="text/javascript" src="simple-highlight.js"></script>
+    <style>
+      code {
+        float: left;
+        margin-right: 20px;
+        width:500px;
+      }
+    </style>
+</head>
+<body>
+
+<code class="simple-highlight sh-theme-dark"><pre>
+function hello() {}
+class Test {}
+var t = () => {
+  return (x > 3 ? true: false);
+}
+SimpleHighlight.highlightCodeNode = function(codeNode) {
+  var preNode = codeNode.firstElementChild;
+  // If pre tag wasnt found inside code
+  if (preNode.tagName.toLowerCase() !== 'pre') {
+    return;
+  }
+  /* this.reset();
+    var lines = preNode.innerText.split('\n');
+  */ 
+  var readyLines = [];
+  for (var line = 0; line < lines.length; line++) {
+    readyLines.push(this.processLine(lines[line]));
+  }
+  preNode.innerHTML = readyLines.join('\n');
+
+  //If no theme selected - apply default
+  if (codeNode.className.indexOf(this.themePrefix) === -1) {
+    codeNode.className = codeNode.className + ' ' + this.themePrefix + 'light';
+  }
+}
+
+SimpleHighlight.highlightOnPage = function() {
+  // Appned styles
+  this.appendStyles(this.themes);
+
+  var codeNodes = document.querySelectorAll('code' + this.mainClass);
+  if (!codeNodes.length) {
+    return;
+  }
+
+  for (var i = 0; i < codeNodes.length; i++) {
+    this.highlightCodeNode(codeNodes[i]);
+  }
+};
+
+</pre></code>
+
+<code class="simple-highlight sh-theme-light"><pre>
+function hello() {}
+class Test {}
+var t = () => {
+  return (x > 3 ? true: false);
+}
+SimpleHighlight.highlightCodeNode = function(codeNode) {
+  var preNode = codeNode.firstElementChild;
+  // If pre tag wasnt found inside code
+  if (preNode.tagName.toLowerCase() !== 'pre') {
+    return;
+  }
+  /* this.reset();
+    var lines = preNode.innerText.split('\n');
+  */ 
+  var readyLines = [];
+  for (var line = 0; line < lines.length; line++) {
+    readyLines.push(this.processLine(lines[line]));
+  }
+  preNode.innerHTML = readyLines.join('\n');
+
+  //If no theme selected - apply default
+  if (codeNode.className.indexOf(this.themePrefix) === -1) {
+    codeNode.className = codeNode.className + ' ' + this.themePrefix + 'light';
+  }
+}
+
+SimpleHighlight.highlightOnPage = function() {
+  // Appned styles
+  this.appendStyles(this.themes);
+
+  var codeNodes = document.querySelectorAll('code' + this.mainClass);
+  if (!codeNodes.length) {
+    return;
+  }
+
+  for (var i = 0; i < codeNodes.length; i++) {
+    this.highlightCodeNode(codeNodes[i]);
+  }
+};
+</pre></code>
+      
+</body>
+</html>
