@@ -54,7 +54,26 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
   for (var line = 0; line < lines.length; line++) {
     readyLines.push(this.processLine(lines[line]));
   }
+
+  // Remove trailing empty lines
+  for (line = line-1; line > 0; line--) {
+    if(!readyLines[line]) {
+      readyLines.pop();
+    } else {
+      break;
+    }
+  }
   preNode.innerHTML = readyLines.join('\n');
+
+  var lineEl = document.createElement('div');
+  lineEl.className = 'sh-lines';
+  var linesHtml = [];
+  var linesCount = readyLines.length
+  for (i = 1; i <= linesCount; i++) {
+    linesHtml.push(i);
+  }
+  lineEl.innerHTML = linesHtml.join('<br/>')
+  codeNode.insertBefore(lineEl,preNode);
 
   //If no theme selected - apply default
   if (codeNode.className.indexOf(this.themePrefix) === -1) {
@@ -329,9 +348,12 @@ SimpleHighlight.appendStyles = function(themes) {
   }
 
   var cssArr = [];
-  cssArr.push('code'+this.mainClass+' { font-size: 16px; padding: 15px;');
-  cssArr.push('overflow-x: auto; display: block; margin: 5px; border-radius:4px}');
-  cssArr.push(this.mainClass + ' > pre { margin: 0;font-family: Monospace; line-height:1.4;}');
+  cssArr.push('code'+this.mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
+  cssArr.push('display: block; margin: 5px; border-radius:4px}');
+  cssArr.push(this.mainClass + ' > pre { margin: 0;font-family: Monospace;overflow-x: auto; }');
+  cssArr.push(this.mainClass +' .sh-lines{float:left;text-align:right;margin-right:15px;left:10px;');
+  cssArr.push('border-right:1px solid #ccc; padding-right: 5px;user-select: none;}');
+
   for (var t = 0; t < themes.length; t++) {
       this.createThemeCss(themes[t], cssArr);
   }
@@ -352,6 +374,7 @@ SimpleHighlight.createThemeCss = function(theme, css) {
   var prefixName = this.mainClass + '.sh-theme-' + theme.name;
   css.push(prefixName + ' { background: '+theme.background+'}');
   css.push(prefixName + ' > pre {color: '+theme.text+'}');
+  css.push(prefixName + ' .sh-lines {color: '+theme.linesCount+';border-color:'+theme.linesCount+'}');
 
   var s, m, color, font;
   for (var type in theme.styles) {
@@ -377,6 +400,7 @@ SimpleHighlight.themes = [{
   name: 'dark',
   background: '#282923',
   text: '#f7f7f7',
+  linesCount: '#666',
   colors: {
     orange: '#fd9621',
     green: '#a6e22c',
@@ -406,6 +430,7 @@ SimpleHighlight.themes = [{
   name: 'light',
   background: '#eee',
   text: '#333',
+  linesCount: '#999',
   colors: {
     lightblue: '#07a',
     orange: '#fd9621',
