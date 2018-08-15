@@ -247,7 +247,7 @@ SimpleHighlight.getWord = function(word, customStyle) {
     } else  if (this.isClassMethod()) {
       // Methods
       style = 'method';
-    } else if (/^[0-9]+$/.test(word)) {
+    } else if (/^\-?[0-9]+$/.test(word)) {
       // Numbers
       style = 'number'
     }
