@@ -2,20 +2,11 @@
 <html>
 <head>
     <title>Fast Highlight</title>
-    <style>
-      code {
-        display: block;
-        width: 350px;
-        float: left;
-        margin-right: 20px;
-        border: 1px solid #ccc;
-        padding: 10px;
-      }
-    </style>
+
 </head>
 <body>
 
-  <code><pre id="source">
+<code class="simple-highlight sh-theme-dark"><pre>
 class Memory {
   constructor(size) {
     if (size) {
@@ -42,12 +33,16 @@ class Memory {
   }
 }
 
+function hello(text) {
+  return 'text' + 'text';
+}
 
-  </pre></code>
+var help = hello();
 
+const t = () => {};
 
-  <code><pre id="dest">
-  </pre></code>
+</pre></code>
+
       
     <script type="text/javascript" src="app.js"></script>
 </body>
