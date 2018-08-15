@@ -1,40 +1,59 @@
 !(function(globalObject) {
 
+function generateKeywords() {
+  var tokens = {
+    self: 'this',
+    blockname: 'class|function|constructor',
+    globalname: 'document|window|console',
+    def: 'var|const|let',
+  };
+  tokens.keyword = 'return|if|else|for|while|break|continue|';
+  tokens.keyword += 'case|do|while|switch|extends|implements|new';
+  var keywords = {};
+  var words;
+  for (var token in tokens) {
+    words = tokens[token].split('|');
+    for (var i = 0; i < words.length; i++) {
+      keywords[words[i]] = token;
+    }
+  }
+  return keywords;
+}
+
+// All token names
+var TOKENS = {
+  comment:'comment',
+  self: 'self',
+  def: 'def',
+  args: 'args',
+  method: 'method',
+  number: 'number',
+  string: 'string',
+  operator: 'operator',
+  keyword: 'keyword',
+  blockname: 'blockname',
+  globalname: 'globalname',
+  functionCall: 'func',
+  boolean: 'boolean'
+}
+
 var SimpleHighlight = {
   mainClass: '.simple-highlight',
   themePrefix: 'sh-theme-',
-  keywords: {
-    'class': 'b_name',
-    'extends': 'keyword',
-    'implements': 'keyword',
-    'function': 'b_name',
-    'this': 'self',
-    'constructor': 'b_name',
-    'document': 'g_name',
-    'window': 'g_name',
-    'console': 'g_name',
-    'return' :'keyword',
-    'if': 'keyword',
-    'for': 'keyword',
-    'break': 'keyword',
-    'case': 'keyword',
-    'do': 'keyword',
-    'while': 'keyword',
-    'swtich': 'keyword',
-    'else': 'keyword',
-    'const': 'def',
-    'var': 'def',
-    'let': 'def',
-    'new': 'keyword',
-  },
-  modifiers: {
+  keywords: generateKeywords(),
+  nextWordModifiers: {
     'class': 'method',
     'extends': 'method',
     'implements': 'method',
     'function': 'method',
-    'new': 'g_name',
-    'console': 'g_name',
+    'new': 'globalname',
+    'console': 'globalname',
   },
+  regEmpty: /^\s+$/,
+  regNumeric: /^\-?[0-9]+$/,
+  regBool: /^true|false$/,
+  regNameChar: /[a-zA-Z0-9\_]/,
+  regOperator: /^[\!\&\+\-\*\|\/\>\<\=]+$/,
 
   openBlockLevel: 0,
   classLevel: null,
@@ -45,10 +64,17 @@ var SimpleHighlight = {
 };
 
 SimpleHighlight.highlightCodeNode = function(codeNode) {
-  var preNode = codeNode.firstElementChild;
+  var preNode = codeNode.querySelector('pre');
   // If pre tag wasnt found inside code
-  if (preNode.tagName.toLowerCase() !== 'pre') {
+  if (!preNode) {
     return;
+  }
+
+  // remove other tags except PRE from CODE
+  for (var i = 0; i < codeNode.childNodes.length; i++) {
+    if (codeNode.childNodes[i] !== preNode) {
+      codeNode.removeChild(codeNode.childNodes[i]);
+    }
   }
 
   this.reset();
@@ -61,7 +87,7 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
 
   // Remove trailing empty lines
   for (line = line-1; line > 0; line--) {
-    if (!readyLines[line].length || /^\s+$/.test(readyLines[line])) {
+    if (!readyLines[line].length || this.regEmpty.test(readyLines[line])) {
       readyLines.pop();
     } else {
       break;
@@ -101,7 +127,6 @@ SimpleHighlight.highlightOnPage = function() {
 
 SimpleHighlight.processLine = function(line) {
   var char;
-  var code;
   var processed = [];
   var wordStart = false;
   var word = [];
@@ -113,28 +138,27 @@ SimpleHighlight.processLine = function(line) {
   if (this.isComment) {
     var commentEnd = line.indexOf('*/');
     if (commentEnd === -1) {
-      return this.applyStyle(line, 'comment');
+      return this.applyStyle(line, TOKENS.comment);
     } else {
       this.isComment = false;
       startFrom = commentEnd + 2;
-      processed.push(this.applyStyle(line.substr(0, startFrom), 'comment'));
+      processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.comment));
     }
   }
 
   if (this.isMultilineString) {
     var stringEnd = line.substr(i).indexOf('`');
     if (stringEnd === -1) {
-      return this.applyStyle(line, 'string');
+      return this.applyStyle(line, TOKENS.string);
     } else {
       this.isMultilineString = false;
       startFrom = stringEnd + 2;
-      processed.push(this.applyStyle(line.substr(0, startFrom), 'string'));
+      processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.string));
     }
   } 
 
-  for (var i=startFrom; i < line.length; i++) {
+  for (var i = startFrom; i < line.length; i++) {
     char = line[i];
-    code = char.charCodeAt(0);
     if (this.isWordChar(char)) {
       if (!wordStart) {
         wordStart = true;
@@ -145,19 +169,19 @@ SimpleHighlight.processLine = function(line) {
         // End of word
         wordString = word.join('');
         // Function call
-        if (char == '(' && ! this.isFunctionDefinition && !this.isClassMethod()) {
-          nextWordModifier = 'func';
+        if (char === '(' && ! this.isFunctionDefinition && !this.isClassMethod()) {
+          nextWordModifier = TOKENS.functionCall;
         }
 
         // Object method assignment
-        if (processed[processed.length-1] == '.') {
+        if (processed[processed.length-1] === '.') {
           // Find next not space char
           var nextChar = this.findNextCharIndex(line, i+1);
           // If its object propety assignemt
-          if (line[nextChar] == '=') {
+          if (line[nextChar] === '=') {
             var nextWordStart = this.findNextCharIndex(line, nextChar + 1);
             if (line.substr(nextWordStart, 8) === 'function') {
-              nextWordModifier = 'method';
+              nextWordModifier = TOKENS.method;
             }
           }
 
@@ -186,14 +210,14 @@ SimpleHighlight.processLine = function(line) {
           // Find next same char and close this range as string
           var closeString = line.substr(i+1).indexOf(char);
           if (closeString !== -1) {
-              processed.push(this.applyStyle(line.substr(i, closeString+2), 'string'));
+              processed.push(this.applyStyle(line.substr(i, closeString+2), TOKENS.string));
               i += closeString+1;
               continue;
           } else {
             if (char === '`') {
               this.isMultilineString = true;
             }
-            processed.push(this.applyStyle(line.substr(i), 'string'));
+            processed.push(this.applyStyle(line.substr(i), TOKENS.string));
             // Exit line processing
             i = line.length;
             continue;
@@ -205,7 +229,7 @@ SimpleHighlight.processLine = function(line) {
           if (next) {
             if (next === '/') {
               // get all the rest of line and apply comment style
-              processed.push(this.applyStyle(line.substr(i), 'comment'));
+              processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
               // Exit line processing
               i = line.length;
               continue;
@@ -213,7 +237,7 @@ SimpleHighlight.processLine = function(line) {
               // If comment not ended on same line
               if (line.substr(i).indexOf('*/') === -1) {
                 this.isComment = true;
-                processed.push(this.applyStyle(line.substr(i), 'comment'));
+                processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
                 // Exit line processing
                 i = line.length;
                 continue;
@@ -251,7 +275,7 @@ SimpleHighlight.processLine = function(line) {
             var nextChar = this.findNextCharIndex(line, i+2);
             // Is arrow function
             if (line[nextChar] === '{') {
-              processed.push(this.applyStyle('=>', 'b_name'));
+              processed.push(this.applyStyle('=>', TOKENS.blockname));
               //skip next char
               i++;
               continue;
@@ -267,10 +291,9 @@ SimpleHighlight.processLine = function(line) {
   return processed.join('');
 }
 
-
 SimpleHighlight.findNextCharIndex = function(line, start) {
   for (var i = start; i < line.length; i++) {
-    if (!(/\s/.test(line[i]))) {
+    if (!(this.regEmpty.test(line[i]))) {
       return i;
     }
   }
@@ -281,56 +304,56 @@ SimpleHighlight.isClassMethod = function() {
 }
 
 SimpleHighlight.getWord = function(word, customStyle) {
-  var style = this.keywords[word] || customStyle; 
+  var token = this.keywords[word] || customStyle; 
 
-  if (!style) {
+  if (!token) {
     if (this.isArguments) {
-      style = 'args';
+      token = TOKENS.args;
     } else if (this.isClassMethod()) {
       // Methods
-      style = 'method';
-    } else if (/^\-?[0-9]+$/.test(word)) {
+      token = TOKENS.method;
+    } else if (this.regNumeric.test(word)) {
       // Numbers
-      style = 'number'
-    } else if (/^true|false$/.test(word)) {
-      style = 'boolean';
+      token = TOKENS.number;
+    } else if (this.regBool.test(word)) {
+      token = TOKENS.boolean;
     }
   }
 
-  if (!style) {
+  if (!token) {
     var firstCharCode = word.charCodeAt(0);
-    // Upper case letter consiger as global object
+    // Upper case letter consider as global object
     if (firstCharCode > 64 && firstCharCode < 91) {
-      style = 'g_name';
+      token = TOKENS.globalname;
     }
   }
 
-  if (style) {
-    return this.applyStyle(word, style);
+  if (token) {
+    return this.applyStyle(word, token);
   } else {
     return word;
   }
 }
 
-SimpleHighlight.applyStyle = function(word, style) {
-  return ['<span class="sh-',style,'">',word,'</span>'].join('');
+SimpleHighlight.applyStyle = function(word, token) {
+  return ['<span class="sh-',token,'">',word,'</span>'].join('');
 }
 
 SimpleHighlight.nextWordRule = function(keyword) {
-  if (this.modifiers.hasOwnProperty(keyword)) {
-    return this.modifiers[keyword];
+  if (this.nextWordModifiers.hasOwnProperty(keyword)) {
+    return this.nextWordModifiers[keyword];
   } else {
     return null;
   }
 }
 
 SimpleHighlight.isWordChar = function(char) {
-  return /[a-zA-Z0-9\_]/.test(char)
+  return this.regNameChar.test(char)
 };
 
 SimpleHighlight.getCharStyle = function(char) {
-  if (/^[\!\&\+\-\*\|\/\>\<\=]+$/.test(char)) {
-    return this.applyStyle(char, 'operand');
+  if (this.regOperator.test(char)) {
+    return this.applyStyle(char, TOKENS.operator);
   } else {
     return char;
   }
@@ -390,9 +413,9 @@ SimpleHighlight.createThemeCss = function(theme, css) {
     // If additional option exists
     if (font) {
       for (m = 0; m < font.length; m++) {
-        if (font[m] == 'i') {
+        if (font[m] === 'i') {
           style += ';font-style: italic';
-        } else if(font[m] == 'b') {
+        } else if(font[m] === 'b') {
           style += ';font-weight: bold';
         }
       }
@@ -413,8 +436,7 @@ SimpleHighlight.themes = [{
     purple: '#ac80ff',
     yellow: '#e7db74',
     red: '#f92472',
-    blue: '#67d8ef',
-    grey: '#888',
+    blue: '#67d8ef'
   },
   styles: {
     comment: 'darkgreen',
@@ -424,10 +446,10 @@ SimpleHighlight.themes = [{
     method: 'green',
     number: 'purple',
     string: 'yellow',
-    operand: 'red',
+    operator: 'red',
     keyword: 'red',
-    b_name: 'blue|i',
-    g_name: 'blue|i',
+    blockname: 'blue|i',
+    globalname: 'blue|i',
     func: 'blue',
     boolean: 'purple'
   }
@@ -438,15 +460,11 @@ SimpleHighlight.themes = [{
   linesCount: '#999',
   colors: {
     lightblue: '#07a',
-    orange: '#fd9621',
     green: '#690',
-    purple: '#734eb9',
-    yellow: '#e7db74',
+    purple: '#905',
     red: '#DD4A68',
-    blue: '#444dd0',
     grey: '#333',
     brown: '#a67f59',
-    num: '#905',
     lightgrey:'#708090'
   },
   styles: {
@@ -455,14 +473,14 @@ SimpleHighlight.themes = [{
     def: 'lightblue',
     args: 'grey',
     method: 'red',
-    number: 'num',
+    number: 'purple',
     string: 'green',
-    operand: 'brown',
+    operator: 'brown',
     keyword: 'lightblue',
-    b_name: 'lightblue',
-    g_name: 'grey',
+    blockname: 'lightblue',
+    globalname: 'grey',
     func: 'red',
-    boolean: 'num'
+    boolean: 'purple'
   }
 }];
 
