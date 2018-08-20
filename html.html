@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Highlight</title>
+  <script type="text/javascript" src="simple-highlight.js"></script>
+  <style>
+    h1, h3 {
+      text-align: center;
+      color: #333;
+      line-height: 1.6;
+      font-family: Arial;
+      margin: 10px 0;
+    }
+    
+    .dark h3{
+      background: #333;
+      color: #fefefe;
+    }
+    .light h3{
+      background: #eee;
+      color: #333;
+    } 
+    .themes {
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+    }
+    code {
+      float: left;
+      margin-right: 15px;
+      width:650px;
+    }
+    textarea {
+      width: 650px;
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Html Test </h1>
+<div class="themes">
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+<!--<body>
+<head>
+  <link rel="stylesheet" href="reset.css"/>
+  <script type="text/javascript" src="app.js">
+  window.onload = function() {
+    document.querySelector('.highlight').removeAttr('lang');
+  }
+  </script>
+  <div class="343"><span>dfsdfsdf<img src='' />dfsdfd</span></div>
+    <chekbox isDisabled *ngFor="let item of items" >
+  <div class="hello word " style="border-tight:20px" >
+  </div>
+</head>
+</body>
+-->
+    </pre></code>
+<code class="simple-highlight sh-theme-dark" lang="js"><pre>
+SimpleHighlight.parseCode = function(text, lang) {
+  switch (lang) {
+    case 'html':
+      return this.parseHTML(text).split('\n');
+    case 'js':
+      // Reset counters
+      this.reset();
+      var lines = text.split('\n');
+      var readyLines = [];
+      for (var line = 0; line < lines.length; line++) {
+        readyLines.push(this.processLine(lines[line]));
+      }
+      return readyLines;
+  }
+  // No lang found
+  return text;
+}
+</pre></code>
+  </div>
+
+</div>
+</body>
+</html>

@@ -77,22 +77,18 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
     }
   }
 
-  this.reset();
-
-  var lines = preNode.innerText.split('\n');
-  var readyLines = [];
-  for (var line = 0; line < lines.length; line++) {
-    readyLines.push(this.processLine(lines[line]));
-  }
-
+  var lang = codeNode.getAttribute('lang') || 'js';
+  var readyLines = this.parseCode(preNode.innerHTML, lang);
+  
   // Remove trailing empty lines
-  for (line = line-1; line > 0; line--) {
+  for (var line = readyLines.length - 1; line > 0; line--) {
     if (!readyLines[line].length || this.regEmpty.test(readyLines[line])) {
       readyLines.pop();
     } else {
       break;
     }
   }
+
   preNode.innerHTML = readyLines.join('\n');
 
   var lineEl = document.createElement('div');
@@ -124,6 +120,112 @@ SimpleHighlight.highlightOnPage = function() {
     this.highlightCodeNode(codeNodes[i]);
   }
 };
+
+SimpleHighlight.parseCode = function(text, lang) {
+  switch (lang) {
+    case 'html':
+      return this.parseHTML(text).split('\n');
+    case 'js':
+      // Reset counters
+      this.reset();
+      var lines = text.split('\n');
+      var readyLines = [];
+      for (var line = 0; line < lines.length; line++) {
+        readyLines.push(this.processLine(lines[line]));
+      }
+      return readyLines;
+  }
+  // No lang found
+  return text;
+}
+
+SimpleHighlight.parseHTML = function(html) {
+  //Check for comment start
+  var startComment = html.indexOf('<!--');
+  var startFrom = (startComment !== -1) ? startComment + 4 : 0
+  var commentEnd = html.indexOf('-->');
+  var end = (commentEnd !== -1) ? commentEnd - startFrom : undefined;
+  html = html.substr(startFrom, end);
+  
+  var tagReg = /<[^\>]+>/g;
+  return this.parseWithRegExp(tagReg, html, this.parseHtmlTag.bind(this));
+}
+
+SimpleHighlight.parseHtmlTag = function(tag) {
+  var match = /^(<\/?)([a-zA-Z\-0-9]+)([^\>]*?)(\/?>)$/.exec(tag[0]);
+  if (!match) {
+    return this.replaceHtmlChars(tag[0]);
+  }
+  var tagName = match[2];
+  var tagAttrs = match[3];  
+  var tagContent = [
+    this.replaceHtmlChars(match[1]),
+    this.applyStyle(tagName, TOKENS.keyword),
+    this.parseHtmlAttrs(tagAttrs),
+    this.replaceHtmlChars(match[4])
+  ];
+  return tagContent.join('');
+}
+
+SimpleHighlight.parseHtmlAttrs = function(attrs) {
+  var reg = /([a-zA-Z\-\_\*\$]+)(((=)(([\'\"])[^\6]*?\6))|\s)?/g;
+  return this.parseWithRegExp(reg, attrs, this.highlightAttr.bind(this));
+}
+
+SimpleHighlight.highlightAttr = function(attr) {
+  var attrStr = [];
+
+  // Attribute name
+  attrStr.push(this.applyStyle(attr[1], TOKENS.comment));
+  // If attribute has value
+  if (attr[4]) {
+    // = char
+    attrStr.push(attr[4]);
+    // Attribute value
+    attrStr.push(this.applyStyle(attr[5], TOKENS.string));
+
+  } else if(attr[2]) {
+    // Empty space after attribute without value
+    attrStr.push(attr[2]);
+  }
+  return attrStr.join('');
+}
+
+SimpleHighlight.parseWithRegExp = function(reg, text, func) {
+  var processed = [];
+  var index = 0;
+  var match;
+  var nonRegLen;
+
+  while (match = reg.exec(text)) {
+    if (nonRegLen = match.index - index) {
+      processed.push(text.substr(index, nonRegLen));
+    }
+    // Apply user function to current match
+    processed.push(func(match));
+    index = match.index + match[0].length;
+  }
+
+  // Trailing characters
+  if (index < text.length - 1) {
+    processed.push(text.substr(index));
+  }
+
+  return processed.join('');
+}
+
+
+SimpleHighlight.replaceHtmlChars = function(text) {
+  var replaceChars = {
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '&': '&amp;',
+  }
+  return text.replace(/\<|\>|\"|\&/g, function(match) { 
+    return replaceChars[match];
+  });
+}
 
 SimpleHighlight.processLine = function(line) {
   var char;
