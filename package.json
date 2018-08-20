@@ -4,7 +4,9 @@
   "description": "Simple syntax highlighter",
   "main": "simple-highlight.js",
   "scripts": {
-    "build": "uglifyjs simple-highlight.js -c -m -o simple-highlight.min.js"
+    "minify": "uglifyjs simple-highlight.js -c -m -o simple-highlight.min.js",
+    "build": "rollup src/index.js --file simple-highlight.js --format iife",
+    "deploy": "npm run build && npm run minify"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,7 @@
   },
   "homepage": "https://github.com/zahard/simple-highlight#readme",
   "devDependencies": {
+    "rollup": "^0.64.1",
     "uglify-js": "^3.4.7"
   }
 }

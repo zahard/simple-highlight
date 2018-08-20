@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>Simple Highlight</title>
-  <script type="text/javascript" src="simple-highlight.js"></script>
+  <script type="text/javascript" src="simple-highlight.min.js"></script>
+
   <style>
     h1, h3 {
       text-align: center;
@@ -44,6 +45,22 @@
     <code class="simple-highlight sh-theme-dark" lang="html"><pre>
 <!--<body>
 <head>
+  <style>
+    h1, h3 {
+      text-align: center;
+      color: #333;
+      margin: 10px 0;
+    }
+    
+    #dark h3{
+      background: #333;
+      color: #fefefe;
+    }
+    .light > h3{
+      background: #eee;
+      color: #333;
+    }
+  </style>
   <link rel="stylesheet" href="reset.css"/>
   <script type="text/javascript" src="app.js">
   window.onload = function() {
