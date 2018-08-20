@@ -8,6 +8,7 @@ var SimpleHighlight = {
   regEmpty: /^\s+$/,
 };
 
+
 SimpleHighlight.highlightCodeNode = function(codeNode) {
   var preNode = codeNode.querySelector('pre');
   // If pre tag wasnt found inside code

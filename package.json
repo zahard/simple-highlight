@@ -6,6 +6,7 @@
   "scripts": {
     "minify": "uglifyjs simple-highlight.js -c -m -o simple-highlight.min.js",
     "build": "rollup src/index.js --file simple-highlight.js --format iife",
+    "dev": "rollup src/index.js --file simple-highlight.js --format iife -w",
     "deploy": "npm run build && npm run minify"
   },
   "repository": {
