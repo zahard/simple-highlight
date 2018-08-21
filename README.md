@@ -1,7 +1,7 @@
 # Simple Highlight
 ![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/js.png)
 
-Simple Highlight is small and lightweight syntax higlighter library.
+Simple Highlight is small and lightweight syntax highlighter library
   - Small size
   - Easy to include, just single javascript file
   - Highlight code on page load
@@ -18,7 +18,7 @@ First include script to your page
 ```html
 <script src="path/to/simple.highlight.min.js"></script>
 ```
-To autohiglight you code put it inside `<code><pre>`tags with `simple-highlight` class
+To autohighlight you code put it inside `<code><pre>`tags with `simple-highlight` class
 ```html
 <code class="simple-highlight"><pre>
 YOUR CODE TO HIGHLIGHT
