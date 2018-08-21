@@ -39,40 +39,40 @@
 </head>
 <body>
 
-<h1>Html Test </h1>
+<h1>JS and CSS included in HTML</h1>
 <div class="themes">
   <div class="theme dark">
-    <code class="simple-highlight sh-theme-dark" lang="css"><pre>
-h1, h3 {
-  text-align: center;
-  color: #333;
-  line-height: 1.6;
-  font-family: Arial;
-  margin: 10px 0;
+    <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+<!--<head>
+  <style>
+.page-layout-wrapper {
+  display: block;
+  position: 'relative';
+  padding-left: 250px;
+  transition: padding-left .2s ease;
 }
-
-.dark h3{
-  background: #333;
-  color: #fefefe;
+.page-layout-wrapper {
+  display: block;
+  position: relative;
+  padding-left: 250px;
+  transition: padding-left .2s ease;
+  overflow: hidden;
 }
-.light h3{
-  background: #eee;
-  color: #333;
-} 
-.themes {
-  display: flex;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-}
-code {
-  float: left;
-  margin-right: 15px;
-  width:650px;
-}
-textarea {
-  width: 650px;
-  height: 200px;
-}
+  </style>
+<head>
+<body>
+  <ul class="hello world">
+    <li class="item-list__item" *nfFor="let item of items">
+      <a href="{{item.link}}">
+    </li>
+  </ul>
+  <script>
+    function Hello (name, value) {
+      return name + value;
+    }
+  </script>
+</body>
+-->
     </pre></code>
 
   </div>

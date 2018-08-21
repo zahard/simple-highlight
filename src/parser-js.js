@@ -1,4 +1,4 @@
-
+import { applyStyle } from './base';
 
 function generateKeywords() {
   var tokens = {
@@ -87,22 +87,22 @@ JsParser.processLine = function(line) {
   if (this.isComment) {
     var commentEnd = line.indexOf('*/');
     if (commentEnd === -1) {
-      return this.applyStyle(line, TOKENS.comment);
+      return applyStyle(line, TOKENS.comment);
     } else {
       this.isComment = false;
       startFrom = commentEnd + 2;
-      processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.comment));
+      processed.push(applyStyle(line.substr(0, startFrom), TOKENS.comment));
     }
   }
 
   if (this.isMultilineString) {
     var stringEnd = line.substr(i).indexOf('`');
     if (stringEnd === -1) {
-      return this.applyStyle(line, TOKENS.string);
+      return applyStyle(line, TOKENS.string);
     } else {
       this.isMultilineString = false;
       startFrom = stringEnd + 2;
-      processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.string));
+      processed.push(applyStyle(line.substr(0, startFrom), TOKENS.string));
     }
   } 
 
@@ -159,14 +159,14 @@ JsParser.processLine = function(line) {
           // Find next same char and close this range as string
           var closeString = line.substr(i+1).indexOf(char);
           if (closeString !== -1) {
-              processed.push(this.applyStyle(line.substr(i, closeString+2), TOKENS.string));
+              processed.push(applyStyle(line.substr(i, closeString+2), TOKENS.string));
               i += closeString+1;
               continue;
           } else {
             if (char === '`') {
               this.isMultilineString = true;
             }
-            processed.push(this.applyStyle(line.substr(i), TOKENS.string));
+            processed.push(applyStyle(line.substr(i), TOKENS.string));
             // Exit line processing
             i = line.length;
             continue;
@@ -178,7 +178,7 @@ JsParser.processLine = function(line) {
           if (next) {
             if (next === '/') {
               // get all the rest of line and apply comment style
-              processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
+              processed.push(applyStyle(line.substr(i), TOKENS.comment));
               // Exit line processing
               i = line.length;
               continue;
@@ -186,7 +186,7 @@ JsParser.processLine = function(line) {
               // If comment not ended on same line
               if (line.substr(i).indexOf('*/') === -1) {
                 this.isComment = true;
-                processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
+                processed.push(applyStyle(line.substr(i), TOKENS.comment));
                 // Exit line processing
                 i = line.length;
                 continue;
@@ -224,7 +224,7 @@ JsParser.processLine = function(line) {
             var nextChar = this.findNextCharIndex(line, i+2);
             // Is arrow function
             if (line[nextChar] === '{') {
-              processed.push(this.applyStyle('=>', TOKENS.blockname));
+              processed.push(applyStyle('=>', TOKENS.blockname));
               //skip next char
               i++;
               continue;
@@ -278,14 +278,10 @@ JsParser.getWord = function(word, customStyle) {
   }
 
   if (token) {
-    return this.applyStyle(word, token);
+    return applyStyle(word, token);
   } else {
     return word;
   }
-}
-
-JsParser.applyStyle = function(word, token) {
-  return ['<span class="sh-',token,'">',word,'</span>'].join('');
 }
 
 JsParser.nextWordRule = function(keyword) {
@@ -302,7 +298,7 @@ JsParser.isWordChar = function(char) {
 
 JsParser.getCharStyle = function(char) {
   if (this.regOperator.test(char)) {
-    return this.applyStyle(char, TOKENS.operator);
+    return applyStyle(char, TOKENS.operator);
   } else {
     return char;
   }

@@ -1,6 +1,41 @@
 (function () {
   'use strict';
 
+  function parseRegExp(obj) {
+    if (!obj.text) {
+      return ''
+    }
+    var text = obj.text;
+    var reg = obj.reg;
+    var matchFunc = obj.match;
+    var noMatchFunc = obj.noMatch || function(t) { return t};
+
+    var processed = [];
+    var index = 0;
+    var match;
+    var nonRegLen;
+
+    while (match = reg.exec(text)) {
+      if (nonRegLen = match.index - index) {
+        processed.push(noMatchFunc(text.substr(index, nonRegLen), match));
+      }
+      // Apply user function to current match
+      processed.push(matchFunc(match));
+      index = match.index + match[0].length;
+    }
+
+    // Trailing characters
+    if (index < text.length - 1) {
+      processed.push(noMatchFunc(text.substr(index), {}));
+    }
+
+    return processed.join('');
+  }
+
+  function applyStyle(word, tokenType) {
+  	return ['<span class="sh-', tokenType, '">', word, '</span>'].join('');	
+  }
+
   function generateKeywords() {
     var tokens = {
       self: 'this',
@@ -88,22 +123,22 @@
     if (this.isComment) {
       var commentEnd = line.indexOf('*/');
       if (commentEnd === -1) {
-        return this.applyStyle(line, TOKENS.comment);
+        return applyStyle(line, TOKENS.comment);
       } else {
         this.isComment = false;
         startFrom = commentEnd + 2;
-        processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.comment));
+        processed.push(applyStyle(line.substr(0, startFrom), TOKENS.comment));
       }
     }
 
     if (this.isMultilineString) {
       var stringEnd = line.substr(i).indexOf('`');
       if (stringEnd === -1) {
-        return this.applyStyle(line, TOKENS.string);
+        return applyStyle(line, TOKENS.string);
       } else {
         this.isMultilineString = false;
         startFrom = stringEnd + 2;
-        processed.push(this.applyStyle(line.substr(0, startFrom), TOKENS.string));
+        processed.push(applyStyle(line.substr(0, startFrom), TOKENS.string));
       }
     } 
 
@@ -160,14 +195,14 @@
             // Find next same char and close this range as string
             var closeString = line.substr(i+1).indexOf(char);
             if (closeString !== -1) {
-                processed.push(this.applyStyle(line.substr(i, closeString+2), TOKENS.string));
+                processed.push(applyStyle(line.substr(i, closeString+2), TOKENS.string));
                 i += closeString+1;
                 continue;
             } else {
               if (char === '`') {
                 this.isMultilineString = true;
               }
-              processed.push(this.applyStyle(line.substr(i), TOKENS.string));
+              processed.push(applyStyle(line.substr(i), TOKENS.string));
               // Exit line processing
               i = line.length;
               continue;
@@ -179,7 +214,7 @@
             if (next) {
               if (next === '/') {
                 // get all the rest of line and apply comment style
-                processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
+                processed.push(applyStyle(line.substr(i), TOKENS.comment));
                 // Exit line processing
                 i = line.length;
                 continue;
@@ -187,7 +222,7 @@
                 // If comment not ended on same line
                 if (line.substr(i).indexOf('*/') === -1) {
                   this.isComment = true;
-                  processed.push(this.applyStyle(line.substr(i), TOKENS.comment));
+                  processed.push(applyStyle(line.substr(i), TOKENS.comment));
                   // Exit line processing
                   i = line.length;
                   continue;
@@ -225,7 +260,7 @@
               var nextChar = this.findNextCharIndex(line, i+2);
               // Is arrow function
               if (line[nextChar] === '{') {
-                processed.push(this.applyStyle('=>', TOKENS.blockname));
+                processed.push(applyStyle('=>', TOKENS.blockname));
                 //skip next char
                 i++;
                 continue;
@@ -279,14 +314,10 @@
     }
 
     if (token) {
-      return this.applyStyle(word, token);
+      return applyStyle(word, token);
     } else {
       return word;
     }
-  };
-
-  JsParser.applyStyle = function(word, token) {
-    return ['<span class="sh-',token,'">',word,'</span>'].join('');
   };
 
   JsParser.nextWordRule = function(keyword) {
@@ -303,7 +334,7 @@
 
   JsParser.getCharStyle = function(char) {
     if (this.regOperator.test(char)) {
-      return this.applyStyle(char, TOKENS.operator);
+      return applyStyle(char, TOKENS.operator);
     } else {
       return char;
     }
@@ -318,92 +349,149 @@
     this.isComment = false;
   };
 
-  var CssParser = {};
+  var CssParser = {
+    regCss: /([^\s][^\{]*?[^\s]?)(\s?)(\{)([^\}]*?)(\})/g,
+    regSelector: /(\#?\.?)([a-zA-Z0-9\-]+)/g,
+    regValueString: /(([\'\"])[^\2]*?\2)/g,
+    regValueColor: /(\#)([0-9a-eA-E]{3,6})/,
+    regValueNumber: /([0-9\.]+)([a-zA-Z]+)?/,
 
-  CssParser.parse = function(text) {
-
-    var reg = /([^\s][^\{]*?[^\s]?)(\s?)(\{)([^\}]*?)(\})/g;
-
-    
-    return this.parseWithRegExp(reg, text, function(css) {
-      return [
-        this.parseSelector(css[1]),
-        css[2],
-        css[3],
-        this.parseRules(css[4]),
-        css[5],
-      ].join('');
-    }.bind(this));
+    TOKENS: {
+      selectorTag: 'keyword',
+      selectorClass: 'method',
+      selectorId: 'args',
+      ruleName: 'blockname',
+      ruleVal: 'blockname',
+      ruleValString: 'string',
+      ruleValUnit: 'keyword',
+      ruleValNum: 'number',
+      ruleValHash: 'none',
+    }
   };
 
+  CssParser.parse = function(text) {
+    return parseRegExp({
+      reg: this.regCss,
+      text: text,
+      match: function(css) {
+        return [
+          this.parseSelector(css[1]),
+          css[2],
+          css[3],
+          this.parseRules(css[4]),
+          css[5],
+        ].join('');
+      }.bind(this)
+    });
+  };
 
   CssParser.parseSelector = function(text) {
-    var reg = /(\#?\.?)([a-zA-Z0-9\-]+)/g;
-    return this.parseWithRegExp(reg, text, function(path) {
-      var token = 'keyword';
-      if (path[1] === '.') {
-        token = 'method';
-      } else if(path[1] === '#') {
-        token = 'args';
-      }
-      return this.applyStyle(path[0], token);
-    }.bind(this));
+    return parseRegExp({
+      reg: this.regSelector, 
+      text: text, 
+      match: function(path) {
+        var token = this.TOKENS.selectorTag;
+        if (path[1] === '.') {
+          token = this.TOKENS.selectorClass;
+        } else if(path[1] === '#') {
+          token = this.TOKENS.selectorId;
+        }
+        return applyStyle(path[0], token);
+      }.bind(this)
+    });
   };
 
   CssParser.parseRules = function(text) {
     var rules = [];
+    // Split by separate rules
     text.split(';').forEach(function(rule) {
+      // Split into rule name and value
       var parts = rule.split(':');
       if (parts.length < 2) {
         rules.push(rule);
         return;
       }
-
-      rules.push([
-        this.applyStyle(parts[0], 'blockname'),
-        this.parseCssValue(parts[1])
-      ].join(':'));
-
+      if (parts.length > 2) {
+        // Situation when semicolon missed  before line break
+        var fixedRules = rule.split('\n');
+        var fixed = [];
+        for (var i=0;i < fixedRules.length;i++) {
+          if (!fixedRules[i]) {
+            fixed.push('');
+            continue;
+          }
+          var parts = fixedRules[i].split(':');
+          fixed.push([
+            applyStyle(parts[0], this.TOKENS.ruleName),
+            this.parseRuleValue(parts[1])
+          ].join(':'));
+          
+        }
+        rules.push(fixed.join('\n'));
+        return;
+      } else {
+        rules.push([
+          applyStyle(parts[0], this.TOKENS.ruleName),
+          this.parseRuleValue(parts[1])
+        ].join(':'));
+      }
     }.bind(this));
 
     return rules.join(';');
   };
 
-  CssParser.parseCssValue = function(value) {
-    return this.applyStyle(value, 'number');
+  CssParser.parseRuleValue = function(value) {
+    // Separate string and non string values
+    return parseRegExp({
+      reg: this.regValueString,
+      text: value,
+      match: this.parseRuleString.bind(this),
+      noMatch: this.parseRuleNonString.bind(this)
+    });
   };
 
-  CssParser.parseWithRegExp = function(reg, text, func, noTagFunc) {
-    noTagFunc = noTagFunc || function(t) { return t};
-    var processed = [];
-    var index = 0;
+  CssParser.parseRuleString = function(match) {
+    return applyStyle(match[1], this.TOKENS.ruleValString);
+  };
+
+  CssParser.parseRuleNonString = function(rule) {
+    // Split non string by white space
+    var ready = [];
+    var parts = rule.split(' ');
+    var part;
     var match;
-    var nonRegLen;
-
-    while (match = reg.exec(text)) {
-      if (nonRegLen = match.index - index) {
-        processed.push(noTagFunc(text.substr(index, nonRegLen), match));
+    for (var i = 0; i < parts.length; i++) {
+      part = parts[i];
+      if (!part) {
+        ready.push(part);
+        continue;
       }
-      // Apply user function to current match
-      processed.push(func(match));
-      index = match.index + match[0].length;
+
+      if (match = this.regValueColor.exec(part)) {
+        ready.push([
+          applyStyle(match[1], this.TOKENS.ruleValHash),
+          applyStyle(match[2], this.TOKENS.ruleValNum)
+        ].join(''));
+        continue;
+      }
+
+      if (match = this.regValueNumber.exec(part)) {
+        var num = [applyStyle(match[1], this.TOKENS.ruleValNum)];
+        if (match[2]) {
+          num.push(applyStyle(match[2], this.TOKENS.ruleValUnit));
+        }
+        ready.push(num.join(''));
+        continue;
+      }
+      ready.push(applyStyle(part, this.TOKENS.ruleVal)); 
     }
-
-    // Trailing characters
-    if (index < text.length - 1) {
-      processed.push(text.substr(index));
-    }
-
-    return processed.join('');
-  };
-
-
-
-  CssParser.applyStyle = function(word, token) {
-    return ['<span class="sh-',token,'">',word,'</span>'].join('');
+    return ready.join(' ');
   };
 
   var HtmlParser = {
+    regTags: /<[^\>]+>/g,
+    regTagParts: /^(<\/?)([a-zA-Z\-0-9]+)([^\>]*?)(\/?>)$/,
+    regAttrs: /([a-zA-Z\-\_\*\$]+)(((=)(([\'\"])[^\6]*?\6))|\s)?/g,
     TOKENS: {
       tag: 'tag',
       attrName: 'attrName',
@@ -420,83 +508,68 @@
     var end = (commentEnd !== -1) ? commentEnd - startFrom : undefined;
     html = html.substr(startFrom, end);
 
-    var tagReg = /<[^\>]+>/g;
-    return this.parseWithRegExp(tagReg, html, this.parseHtmlTag.bind(this), function(text, match) {
-      // Process inline script tag
-      if (match[0] === '</script>') {
-        return '<span class="inline-js">'+JsParser.parse(text)+'</span>';
+    return parseRegExp({
+      reg: this.regTags,
+      text: html,
+      match: this.parseHtmlTag.bind(this),
+      noMatch: function(text, match) {
+        // Process inline script and style tags
+        var res;
+        switch (match[0]) {
+          case '</script>':
+            res = '<span class="inline-js">'+JsParser.parse(text)+'</span>';
+            break;
+          case  '</style>':
+            res = CssParser.parse(text);
+            break;
+          default:
+            res = text;
+        }
+        return res;
       }
-
-      // Process inline style tag
-      if (match[0] === '</style>') {
-        return CssParser.parse(text);
-      }
-      return text;
     });
   };
 
   HtmlParser.parseHtmlTag = function(tag) {
-    var match = /^(<\/?)([a-zA-Z\-0-9]+)([^\>]*?)(\/?>)$/.exec(tag[0]);
+    var match = this.regTagParts.exec(tag[0]);
     if (!match) {
       return this.replaceHtmlChars(tag[0]);
     }
     var tagName = match[2];
     var tagAttrs = match[3];  
-    var tagContent = [
-      this.replaceHtmlChars(match[1]),
-      this.applyStyle(tagName, this.TOKENS.tag),
+    return [
+      this.replaceHtmlChars(match[1]), // < char
+      applyStyle(tagName, this.TOKENS.tag),
       this.parseHtmlAttrs(tagAttrs),
-      this.replaceHtmlChars(match[4])
-    ];
-    return tagContent.join('');
+      this.replaceHtmlChars(match[4]) // /> char
+    ].join('');
   };
 
   HtmlParser.parseHtmlAttrs = function(attrs) {
-    var reg = /([a-zA-Z\-\_\*\$]+)(((=)(([\'\"])[^\6]*?\6))|\s)?/g;
-    return this.parseWithRegExp(reg, attrs, this.highlightAttr.bind(this));
+    return parseRegExp({
+      reg: this.regAttrs,
+      text: attrs,
+      match: this.highlightAttr.bind(this)
+    });
   };
 
   HtmlParser.highlightAttr = function(attr) {
     var attrStr = [];
 
     // Attribute name
-    attrStr.push(this.applyStyle(attr[1], this.TOKENS.attrName));
+    attrStr.push(applyStyle(attr[1], this.TOKENS.attrName));
     // If attribute has value
     if (attr[4]) {
       // = char
       attrStr.push(attr[4]);
       // Attribute value
-      attrStr.push(this.applyStyle(attr[5], this.TOKENS.attrVal));
+      attrStr.push(applyStyle(attr[5], this.TOKENS.attrVal));
 
     } else if(attr[2]) {
       // Empty space after attribute without value
       attrStr.push(attr[2]);
     }
     return attrStr.join('');
-  };
-
-  HtmlParser.parseWithRegExp = function(reg, text, func, noTagFunc) {
-    noTagFunc = noTagFunc || function(t) { return t};
-    var processed = [];
-    var index = 0;
-    var match;
-    var nonRegLen;
-
-    while (match = reg.exec(text)) {
-      if (nonRegLen = match.index - index) {
-        processed.push(noTagFunc(text.substr(index, nonRegLen), match));
-      }
-      // Apply user function to current match
-      processed.push(func(match));
-      index = match.index + match[0].length;
-    }
-
-    // Trailing characters
-    if (index < text.length - 1) {
-      processed.push(text.substr(index));
-    }
-
-    return processed.join('');
   };
 
   HtmlParser.replaceHtmlChars = function(text) {
@@ -509,10 +582,6 @@
     return text.replace(/\<|\>|\"|\&/g, function(match) { 
       return replaceChars[match];
     });
-  };
-
-  HtmlParser.applyStyle = function(word, token) {
-    return ['<span class="sh-',token,'">',word,'</span>'].join('');
   };
 
   var SimpleHighlight = {
@@ -583,12 +652,12 @@
 
   SimpleHighlight.parseCode = function(text, lang) {
     switch (lang) {
-      case 'html':
-        return HtmlParser.parse(text);
       case 'js':
         return JsParser.parse(text);
       case 'css':
         return CssParser.parse(text);
+      case 'html':
+        return HtmlParser.parse(text);
     }
     // No lang found
     return text;
@@ -662,9 +731,11 @@
       purple: '#ac80ff',
       yellow: '#e7db74',
       red: '#f92472',
-      blue: '#67d8ef'
+      blue: '#67d8ef',
+      grey: '#999',
     },
     styles: {
+      none: 'grey',
       tag: 'red',
       attrName: 'green',
       attrVal: 'yellow',
@@ -697,6 +768,7 @@
       lightgrey:'#708090'
     },
     styles: {
+      none: 'grey',
       tag: 'brown',
       attrName: 'purple',
       attrVal: 'green',

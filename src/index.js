@@ -71,12 +71,12 @@ SimpleHighlight.highlightOnPage = function() {
 
 SimpleHighlight.parseCode = function(text, lang) {
   switch (lang) {
-    case 'html':
-      return HtmlParser.parse(text);
     case 'js':
       return JsParser.parse(text);
     case 'css':
       return CssParser.parse(text);
+    case 'html':
+      return HtmlParser.parse(text);
   }
   // No lang found
   return text;
@@ -150,9 +150,11 @@ SimpleHighlight.themes = [{
     purple: '#ac80ff',
     yellow: '#e7db74',
     red: '#f92472',
-    blue: '#67d8ef'
+    blue: '#67d8ef',
+    grey: '#999',
   },
   styles: {
+    none: 'grey',
     tag: 'red',
     attrName: 'green',
     attrVal: 'yellow',
@@ -185,6 +187,7 @@ SimpleHighlight.themes = [{
     lightgrey:'#708090'
   },
   styles: {
+    none: 'grey',
     tag: 'brown',
     attrName: 'purple',
     attrVal: 'green',
