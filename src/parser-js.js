@@ -8,7 +8,7 @@ function generateKeywords() {
     def: 'var|const|let',
   };
   tokens.keyword = 'return|if|else|for|while|break|continue|';
-  tokens.keyword += 'case|do|while|switch|extends|implements|new';
+  tokens.keyword += 'case|do|while|switch|extends|implements|new|public|private|static';
   var keywords = {};
   var words;
   for (var token in tokens) {

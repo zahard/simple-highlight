@@ -76,22 +76,10 @@
 -->
     </pre></code>
 <code class="simple-highlight sh-theme-dark" lang="js"><pre>
-SimpleHighlight.parseCode = function(text, lang) {
-  switch (lang) {
-    case 'html':
-      return this.parseHTML(text).split('\n');
-    case 'js':
-      // Reset counters
-      this.reset();
-      var lines = text.split('\n');
-      var readyLines = [];
-      for (var line = 0; line < lines.length; line++) {
-        readyLines.push(this.processLine(lines[line]));
-      }
-      return readyLines;
+class Hello {
+  public setMode() {
+    this.mode = true;
   }
-  // No lang found
-  return text;
 }
 </pre></code>
   </div>
