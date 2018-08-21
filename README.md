@@ -6,6 +6,7 @@ Simple Highlight is small and lightweight syntax higlighter library.
   - Dark and light themes
   - Only JS syntax supported for first version
 
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/themes.png)
 
 ## Example
 To see first how it looks like on page, go to  [demo page](https://zahard.github.io/simple-highlight/index.html)

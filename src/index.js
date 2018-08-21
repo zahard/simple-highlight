@@ -6,18 +6,41 @@ import CssParser from './parser-css';
 
 var SimpleHighlight = {
   mainClass: '.simple-highlight',
-  themePrefix: '.sh-theme-',
-  regEmpty: /^\s+$/,
+  themeClass: '.sh-theme-',
+  themePrefix: 'sh-theme-',
+  regEmpty: /^\s?$/,
 };
 
 SimpleHighlight.highlightCodeNode = function(codeNode) {
+  // Get <PRE> tag wich contains code
   var preNode = codeNode.querySelector('pre');
-  // If pre tag wasnt found inside code
-  if (!preNode || preNode.className.indexOf('.sh-processed') !== -1) {
+
+  // If was already highlithed - skip
+  if (!preNode || preNode.className.indexOf('sh-processed') !== -1) {
     return;
   }
+  
+  var lang = codeNode.getAttribute('lang') || 'js';
 
-  preNode.className += ' .sh-processed';
+  var parsedCode = this.parseCode(preNode.innerHTML, lang);
+  
+  // Split code by lines
+  var lines = parsedCode.split('\n');
+
+  // Remove trailing empty lines from start and end
+  while (lines.length && this.regEmpty.test(lines[0])) {
+    lines.shift();
+  }
+  while (lines.length && this.regEmpty.test(lines[lines.length - 1])) {
+    lines.pop();
+  }
+
+  if (!lines.length) {
+    lines.push('//');
+  }
+ 
+  preNode.innerHTML = lines.join('\n');
+  preNode.className = 'sh-processed';
 
   // remove other tags except PRE from CODE
   for (var i = 0; i < codeNode.childNodes.length; i++) {
@@ -26,30 +49,16 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
     }
   }
 
-  var lang = codeNode.getAttribute('lang') || 'js';
-  var code = preNode[lang === 'html' ? 'innerHTML': 'innerText'];
-  var readyLines = this.parseCode(code, lang).split('\n');
-
-  // Remove trailing empty lines
-  for (var line = readyLines.length - 1; line > 0; line--) {
-    if (!readyLines[line].length || this.regEmpty.test(readyLines[line])) {
-      readyLines.pop();
-    } else {
-      break;
-    }
-  }
-
-  preNode.innerHTML = readyLines.join('\n');
-
+  // Create lines 
   var lineEl = document.createElement('div');
   lineEl.className = 'sh-lines';
   var linesHtml = [];
-  var linesCount = readyLines.length
+  var linesCount = lines.length
   for (i = 1; i <= linesCount; i++) {
     linesHtml.push(i);
   }
   lineEl.innerHTML = linesHtml.join('<br/>')
-  codeNode.insertBefore(lineEl,preNode);
+  codeNode.insertBefore(lineEl, preNode);
 
   //If no theme selected - apply default
   if (codeNode.className.indexOf(this.themePrefix) === -1) {
@@ -81,12 +90,12 @@ SimpleHighlight.parseCode = function(text, lang) {
   return text;
 }
 
-
 // Include CSS on page
-appendThemesStyles(colorThemes, 
-    SimpleHighlight.mainClass, 
-    SimpleHighlight.themePrefix);
-
+appendThemesStyles(
+  colorThemes, 
+  SimpleHighlight.mainClass, 
+  SimpleHighlight.themeClass
+);
 
 // Hightlight initially on dom ready
 document.addEventListener("DOMContentLoaded", function() {

@@ -22,6 +22,9 @@ HtmlParser.parse = function(html) {
   var end = (commentEnd !== -1) ? commentEnd - startFrom : undefined;
   html = html.substr(startFrom, end);
 
+  //Unescape HTML special chars
+  html = this.unescape(html);
+
   return parseRegExp({
     reg: this.regTags,
     text: html,
@@ -95,6 +98,14 @@ HtmlParser.replaceHtmlChars = function(text) {
   }
   return text.replace(/\<|\>|\"|\&/g, function(match) { 
     return replaceChars[match];
+  });
+}
+
+HtmlParser.unescape = function(html) {
+  var el = document.createElement('div');
+  return html.replace(/\&[#0-9a-z]+;/gi, function (enc) {
+      el.innerHTML = enc;
+      return el.innerText
   });
 }
 

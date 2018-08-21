@@ -3,7 +3,6 @@
 <head>
   <title>Simple Highlight</title>
   <script type="text/javascript" src="simple-highlight.js"></script>
-
   <style>
     h1, h3 {
       text-align: center;
@@ -12,7 +11,14 @@
       font-family: Arial;
       margin: 10px 0;
     }
-
+    h1 { font-size: 28px; margin-top:30px;}
+    h3 { 
+      display: none;
+      border-radius: 2px;
+      font-size: 20px;
+      margin:10px 5px;
+      font-weight: normal;
+     }
     .dark h3{
       background: #333;
       color: #fefefe;
@@ -27,25 +33,61 @@
       flex-wrap: wrap;
     }
     code {
-      float: left;
       margin-right: 15px;
-      width:650px;
-    }
-    textarea {
-      width: 650px;
-      height: 200px;
+      width:500px;
     }
   </style>
 </head>
 <body>
 
-<h1>JS and CSS included in HTML</h1>
+<h1>Default Themes</h1>
+<div class="themes">
+  <div class="theme dark">
+    <h3>Dark</h3>
+    <code class="simple-highlight sh-theme-dark"><pre>
+/**
+ * Good doggo class
+ */
+class Dog extends Animal {
+  bark(times) {
+    const text = new Array(times).fill('Bark!');
+    console.log(text);
+  }
+
+  isGoodBoy() {
+    return true;
+  }
+}
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <h3>Light</h3>
+    <code class="simple-highlight sh-theme-light"><pre>
+/**
+ * Good doggo class
+ */
+class Dog extends Animal {
+  bark(times) {
+    const text = new Array(times).fill('Bark!');
+    console.log(text);
+  }
+
+  isGoodBoy() {
+    return true;
+  }
+}
+    </pre></code>
+  </div>
+</div>
+<h1>Support inline JS and CSS</h1>
+
 <div class="themes">
   <div class="theme dark">
     <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+
 <!--<head>
   <style>
-.page-layout-wrapper {
+#main p {
   display: block;
   position: 'relative';
   padding-left: 250px;
@@ -62,7 +104,7 @@
 <head>
 <body>
   <ul class="hello world">
-    <li class="item-list__item" *nfFor="let item of items">
+    <li class="item-list__item">
       <a href="{{item.link}}">
     </li>
   </ul>
@@ -73,7 +115,7 @@
   </script>
 </body>
 -->
-    </pre></code>
+</pre></code>
 
   </div>
 
@@ -81,18 +123,13 @@
     <code class="simple-highlight sh-theme-light" lang="html"><pre>
 <!--<head>
   <style>
-#page-layout-wrapper {
+#main p {
   display: block;
   position: 'relative';
   padding-left: 250px;
   transition: padding-left .2s ease;
 }
-
-div p {
-  color: #333;
-}
-
-.page-layout-wrapper, .new {
+.page-layout-wrapper {
   display: block;
   position: relative;
   padding-left: 250px;
@@ -103,7 +140,7 @@ div p {
 <head>
 <body>
   <ul class="hello world">
-    <li class="item-list__item" *nfFor="let item of items">
+    <li class="item-list__item">
       <a href="{{item.link}}">
     </li>
   </ul>
@@ -115,9 +152,7 @@ div p {
 </body>
 -->
     </pre></code>
-
   </div>
-
 </div>
 </body>
 </html>
