@@ -21,16 +21,33 @@
       margin:10px 5px;
       font-weight: normal;
       color: #333;
-      width: 500px;
      }
     .themes {
       display: flex;
       justify-content: space-evenly;
       flex-wrap: wrap;
     }
+
+    .theme {
+
+    }
+
     code {
       margin-right: 15px;
       width:500px;
+    }
+
+    @media screen and (max-width: 992px) {
+      .themes {
+        display: block;
+      }
+      .theme {
+        margin-bottom: 20px;
+      }
+      code {
+        width: 90%;
+        margin:5px auto !important;
+      }
     }
 
     p {
