@@ -5,9 +5,8 @@ import JsParser from './parser-js';
 import CssParser from './parser-css';
 
 var SimpleHighlight = {
-  mainClass: '.simple-highlight',
-  themeClass: '.sh-theme-',
-  themePrefix: 'sh-theme-',
+  mainClass: 'simple-highlight',
+  themeClass: 'sh-theme-',
   regEmpty: /^\s?$/,
 };
 
@@ -60,14 +59,20 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
   lineEl.innerHTML = linesHtml.join('<br/>')
   codeNode.insertBefore(lineEl, preNode);
 
-  //If no theme selected - apply default
-  if (codeNode.className.indexOf(this.themePrefix) === -1) {
-    codeNode.className = codeNode.className + ' ' + this.themePrefix + 'light';
+  // If no theme selected - apply default
+  if (codeNode.className.indexOf(this.themeClass) === -1) {
+    codeNode.className = codeNode.className + ' ' + this.themeClass + 'light';
+  }
+
+  // If no main class - add one 
+  // (for cases when code DOM node passed manually)
+  if (codeNode.className.indexOf(this.mainClass) === -1) {
+    codeNode.className = codeNode.className + ' ' + this.mainClass;
   }
 }
 
 SimpleHighlight.highlightOnPage = function() {
-  var codeNodes = document.querySelectorAll('code' + this.mainClass);
+  var codeNodes = document.querySelectorAll('code.' + this.mainClass);
   if (!codeNodes.length) {
     return;
   }

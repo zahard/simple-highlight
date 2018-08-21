@@ -1,30 +1,42 @@
 # Simple Highlight
 Simple Highlight is small and lightweight syntax higlighter library.
   - Small size
-  - Highlight on page load
+  - Easy to include, just single javascript file
+  - Highlight code on page load
   - Public method to highlight selected code tags
   - Dark and light themes
-  - Only JS syntax supported for first version
+  - Javascript, HTML and CSS syntax
+  - Support of inlined scripts and styles in HTML
 
-![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/themes.png)
+## Examples
+Check it in action on this [demo page](https://zahard.github.io/simple-highlight/index.html)
 
-## Example
-To see first how it looks like on page, go to  [demo page](https://zahard.github.io/simple-highlight/index.html)
+### Javascript
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/js.png)
+
+### HTML
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/html.png)
+
+### CSS
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/css.png)
+
+### Mixed languages
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/mixed.png)
 
 ## Usage
 First include script to your page
 ```html
 <script src="path/to/simple.highlight.min.js"></script>
 ```
-To autohiglight you code put it inside tags
+To autohiglight you code put it inside `<code><pre>`tags with `simple-highlight` class
 ```html
 <code class="simple-highlight"><pre>
 YOUR CODE TO HIGHLIGHT
 </pre><code>
 ```
-On page load script will find all `code` tags with `simple-highlight` class and appply highlighting to it
+On page load script will find all `code` tags with `simple-highlight` class and apply highlighting to it
 
-Optionally you can specify with theme will be used with class `sh-theme-THEME_NAME`
+Optionally you can specify wich theme will be used with class `sh-theme-THEME_NAME`
 Now available two themes: `dark` and `light`, and light is default one (so if no theme class specified this one will be used). 
 Next example will highlight your code with dark theme on page load:
 ```html

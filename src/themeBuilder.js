@@ -5,6 +5,7 @@ export default function (themes, mainClass, themePrefix) {
   if (document.getElementById(styleId)) {
     return;
   }
+  mainClass = '.' + mainClass;
 
   var cssArr = [];
   cssArr.push('code'+mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
@@ -29,7 +30,7 @@ export default function (themes, mainClass, themePrefix) {
   head.appendChild(style);
 
   function createThemeCss(theme, css) {
-    var prefixName = mainClass + themePrefix + theme.name;
+    var prefixName = mainClass + '.' + themePrefix + theme.name;
     css.push(prefixName + ' { background: '+theme.background+'}');
     css.push(prefixName + ' > pre {color: '+theme.text+'}');
     css.push(prefixName + ' .sh-lines {color: '+theme.linesCount+';border-color:'+theme.linesCount+'}');

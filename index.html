@@ -17,15 +17,9 @@
       font-size: 20px;
       margin:10px 5px;
       font-weight: normal;
-     }
-    .dark h3{
-      background: #333;
-      color: #fefefe;
-    }
-    .light h3{
-      background: #eee;
       color: #333;
-    } 
+      width: 500px;
+     }
     .themes {
       display: flex;
       justify-content: space-evenly;
@@ -38,19 +32,11 @@
   </style>
 </head>
 <body>
-
-<h1>Default Themes</h1>
+<h1>Javascript Syntax</h1>
 <div class="themes">
   <div class="theme dark">
-    <h3>Dark</h3>
+    <h3>Dark Theme</h3>
     <code class="simple-highlight sh-theme-dark"><pre>
-// Factorial example function
-function factorial(n) {
-  if (n == 1) {
-    return 1;
-  }
-  return n * factorial(n - 1);
-}
 /**
  * Good doggo class
  */
@@ -65,30 +51,14 @@ class Dog extends Animal {
   }
 }
 
-const getLongText = () => {
-  return `This is
-multiline
-string`;
+function Hello(world) {
+  return 'Hello ' + world;
 }
-
-// Object Methods highlighting
-var API = {};
-API.getJson = function() {
-  // ...
-}
-
     </pre></code>
   </div>
   <div class="theme light">
-    <h3>Light</h3>
+    <h3>Light Theme</h3>
     <code class="simple-highlight sh-theme-light"><pre>
-// Factorial example function
-function factorial(n) {
-  if (n == 1) {
-    return 1;
-  }
-  return n * factorial(n - 1);
-}
 /**
  * Good doggo class
  */
@@ -103,91 +73,119 @@ class Dog extends Animal {
   }
 }
 
-const getLongText = () => {
-  return `This is
-multiline
-string`;
-}
-
-// Object Methods highlighting
-var API = {};
-API.getJson = function() {
-  // ...
+function Hello(world) {
+  return 'Hello ' + world;
 }
     </pre></code>
   </div>
 </div>
-<h1>Support inline JS and CSS</h1>
-
+<h1>HTML Syntax</h1>
 <div class="themes">
   <div class="theme dark">
     <code class="simple-highlight sh-theme-dark" lang="html"><pre>
-
-<!--<head>
-  <style>
-#main p {
-  display: block;
-  position: 'relative';
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-}
-.page-layout-wrapper {
-  display: block;
-  position: relative;
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-  overflow: hidden;
-}
-  </style>
-<head>
-<body>
-  <ul class="hello world">
-    <li class="item-list__item">
-      <a href="{{item.link}}">
-    </li>
-  </ul>
-  <script>
-    function Hello (name, value) {
-      return name + value;
-    }
-  </script>
-</body>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script type="text/javascript" src="app.js"></script>
+  </head>
+  <body>
+    <div class="item-list">
+      <a href="#" >Link<a/>
+    <div>
+  </body>
+</html>
 -->
-</pre></code>
-
+    </pre></code>
   </div>
-
   <div class="theme light">
     <code class="simple-highlight sh-theme-light" lang="html"><pre>
-<!--<head>
-  <style>
-#main p {
-  display: block;
-  position: 'relative';
-  padding-left: 250px;
-  transition: padding-left .2s ease;
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script type="text/javascript" src="app.js"></script>
+  </head>
+  <body>
+    <div class="item-list">
+      <a href="#" >Link<a/>
+    <div>
+  </body>
+</html>
+-->
+    </pre></code>
+  </div>
+</div>
+<h1>CSS Syntax</h1>
+<div class="themes">
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="css"><pre>
+#main {
+  margin: auto;
+  border: 2px solid #ccc;
 }
-.page-layout-wrapper {
-  display: block;
-  position: relative;
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-  overflow: hidden;
+
+.item-list a {
+  text-decodation: none;
+  color: #f7f7f7;
+  font-family: 'Arial';
 }
-  </style>
-<head>
-<body>
-  <ul class="hello world">
-    <li class="item-list__item">
-      <a href="{{item.link}}">
-    </li>
-  </ul>
-  <script>
-    function Hello (name, value) {
-      return name + value;
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <code class="simple-highlight sh-theme-light" lang="css"><pre>
+#main {
+  margin: auto;
+  border: 2px solid #ccc;
+}
+
+.item-list a {
+  text-decodation: none;
+  color: #f7f7f7;
+  font-family: 'Arial';
+}
+    </pre></code>
+  </div>
+</div>
+<h1>Inlined styles and javasctipt</h1>
+<div class="themes">  
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script>
+    window.onload = function() {
+      SimpleHighlight(getElement('code'))
     }
-  </script>
-</body>
+    </script>
+    <style>
+    code.highlight {
+      width: 190px;
+    }
+    </style>
+  </head>
+  <body></body>
+</html>
+-->
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <code class="simple-highlight sh-theme-light" lang="html"><pre>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script>
+    window.onload = function() {
+      SimpleHighlight(getElement('code'))
+    }
+    </script>
+    <style>
+    code.highlight {
+      width: 190px;
+    }
+    </style>
+  </head>
+  <body></body>
+</html>
 -->
     </pre></code>
   </div>

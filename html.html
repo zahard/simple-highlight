@@ -40,10 +40,8 @@
 </head>
 <body>
 
-<h1>Default Themes</h1>
 <div class="themes">
   <div class="theme dark">
-    <h3>Dark</h3>
     <code class="simple-highlight sh-theme-dark"><pre>
 /**
  * Good doggo class
@@ -58,10 +56,13 @@ class Dog extends Animal {
     return true;
   }
 }
+
+function Hello(world) {
+  return 'Hello ' + world;
+}
     </pre></code>
   </div>
   <div class="theme light">
-    <h3>Light</h3>
     <code class="simple-highlight sh-theme-light"><pre>
 /**
  * Good doggo class
@@ -76,80 +77,115 @@ class Dog extends Animal {
     return true;
   }
 }
+
+function Hello(world) {
+  return 'Hello ' + world;
+}
     </pre></code>
   </div>
-</div>
-<h1>Support inline JS and CSS</h1>
 
-<div class="themes">
   <div class="theme dark">
     <code class="simple-highlight sh-theme-dark" lang="html"><pre>
-
-<!--<head>
-  <style>
-#main p {
-  display: block;
-  position: 'relative';
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-}
-.page-layout-wrapper {
-  display: block;
-  position: relative;
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-  overflow: hidden;
-}
-  </style>
-<head>
-<body>
-  <ul class="hello world">
-    <li class="item-list__item">
-      <a href="{{item.link}}">
-    </li>
-  </ul>
-  <script>
-    function Hello (name, value) {
-      return name + value;
-    }
-  </script>
-</body>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script type="text/javascript" src="app.js"></script>
+  </head>
+  <body>
+    <div class="item-list">
+      <a href="#" >Link<a/>
+    <div>
+  </body>
+</html>
 -->
-</pre></code>
-
+    </pre></code>
   </div>
-
   <div class="theme light">
     <code class="simple-highlight sh-theme-light" lang="html"><pre>
-<!--<head>
-  <style>
-#main p {
-  display: block;
-  position: 'relative';
-  padding-left: 250px;
-  transition: padding-left .2s ease;
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script type="text/javascript" src="app.js"></script>
+  </head>
+  <body>
+    <div class="item-list">
+      <a href="#" >Link<a/>
+    <div>
+  </body>
+</html>
+-->
+    </pre></code>
+  </div>
+
+
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="css"><pre>
+#main {
+  margin: auto;
+  border: 2px solid #ccc;
 }
-.page-layout-wrapper {
-  display: block;
-  position: relative;
-  padding-left: 250px;
-  transition: padding-left .2s ease;
-  overflow: hidden;
+
+.item-list a {
+  text-decodation: none;
+  color: #f7f7f7;
+  font-family: 'Arial';
 }
-  </style>
-<head>
-<body>
-  <ul class="hello world">
-    <li class="item-list__item">
-      <a href="{{item.link}}">
-    </li>
-  </ul>
-  <script>
-    function Hello (name, value) {
-      return name + value;
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <code class="simple-highlight sh-theme-light" lang="css"><pre>
+#main {
+  margin: auto;
+  border: 2px solid #ccc;
+}
+
+.item-list a {
+  text-decodation: none;
+  color: #f7f7f7;
+  font-family: 'Arial';
+}
+    </pre></code>
+  </div>
+
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script>
+    window.onload = function() {
+      SimpleHighlight(getElement('code'))
     }
-  </script>
-</body>
+    </script>
+    <style>
+    code.highlight {
+      width: 190px;
+    }
+    </style>
+  </head>
+  <body></body>
+</html>
+-->
+    </pre></code>
+  </div>
+  <div class="theme light">
+    <code class="simple-highlight sh-theme-light" lang="html"><pre>
+<!--<html>
+  <head>
+    <title>Simple Highlight</title>
+    <script>
+    window.onload = function() {
+      SimpleHighlight(getElement('code'))
+    }
+    </script>
+    <style>
+    code.highlight {
+      width: 190px;
+    }
+    </style>
+  </head>
+  <body></body>
+</html>
 -->
     </pre></code>
   </div>

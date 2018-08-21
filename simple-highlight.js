@@ -115,6 +115,7 @@
     if (document.getElementById(styleId)) {
       return;
     }
+    mainClass = '.' + mainClass;
 
     var cssArr = [];
     cssArr.push('code'+mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
@@ -139,7 +140,7 @@
     head.appendChild(style);
 
     function createThemeCss(theme, css) {
-      var prefixName = mainClass + themePrefix + theme.name;
+      var prefixName = mainClass + '.' + themePrefix + theme.name;
       css.push(prefixName + ' { background: '+theme.background+'}');
       css.push(prefixName + ' > pre {color: '+theme.text+'}');
       css.push(prefixName + ' .sh-lines {color: '+theme.linesCount+';border-color:'+theme.linesCount+'}');
@@ -519,7 +520,7 @@
     regCss: /([^\s][^\{]*?[^\s]?)(\s?)(\{)([^\}]*?)(\})/g,
     regSelector: /(\#?\.?)([a-zA-Z0-9\-]+)/g,
     regValueString: /(([\'\"])[^\2]*?\2)/g,
-    regValueColor: /(\#)([0-9a-eA-E]{3,6})/,
+    regValueColor: /(\#)([0-9a-fA-F]{3,6})/,
     regValueNumber: /([0-9\.]+)([a-zA-Z]+)?/,
 
     TOKENS: {
@@ -762,9 +763,8 @@
   };
 
   var SimpleHighlight = {
-    mainClass: '.simple-highlight',
-    themeClass: '.sh-theme-',
-    themePrefix: 'sh-theme-',
+    mainClass: 'simple-highlight',
+    themeClass: 'sh-theme-',
     regEmpty: /^\s?$/,
   };
 
@@ -817,14 +817,20 @@
     lineEl.innerHTML = linesHtml.join('<br/>');
     codeNode.insertBefore(lineEl, preNode);
 
-    //If no theme selected - apply default
-    if (codeNode.className.indexOf(this.themePrefix) === -1) {
-      codeNode.className = codeNode.className + ' ' + this.themePrefix + 'light';
+    // If no theme selected - apply default
+    if (codeNode.className.indexOf(this.themeClass) === -1) {
+      codeNode.className = codeNode.className + ' ' + this.themeClass + 'light';
+    }
+
+    // If no main class - add one 
+    // (for cases when code DOM node passed manually)
+    if (codeNode.className.indexOf(this.mainClass) === -1) {
+      codeNode.className = codeNode.className + ' ' + this.mainClass;
     }
   };
 
   SimpleHighlight.highlightOnPage = function() {
-    var codeNodes = document.querySelectorAll('code' + this.mainClass);
+    var codeNodes = document.querySelectorAll('code.' + this.mainClass);
     if (!codeNodes.length) {
       return;
     }

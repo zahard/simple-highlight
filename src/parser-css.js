@@ -4,7 +4,7 @@ var CssParser = {
   regCss: /([^\s][^\{]*?[^\s]?)(\s?)(\{)([^\}]*?)(\})/g,
   regSelector: /(\#?\.?)([a-zA-Z0-9\-]+)/g,
   regValueString: /(([\'\"])[^\2]*?\2)/g,
-  regValueColor: /(\#)([0-9a-eA-E]{3,6})/,
+  regValueColor: /(\#)([0-9a-fA-F]{3,6})/,
   regValueNumber: /([0-9\.]+)([a-zA-Z]+)?/,
 
   TOKENS: {
