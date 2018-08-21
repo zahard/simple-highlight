@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Simple Highlight</title>
+  <title>Simple Highlight - Syntax Highligh Library</title>
   <script type="text/javascript" src="simple-highlight.js"></script>
   <style>
+    body {
+      padding-bottom: 20px;
+    }
     h1, h3 {
       text-align: center;
       color: #333;
@@ -29,9 +32,39 @@
       margin-right: 15px;
       width:500px;
     }
+
+    p {
+      color: #222;
+      font-family: Arial;
+      font-size: 18px;
+      padding: 10px 40px;
+      line-height: 1.5;
+      margin:0 auto;
+      max-width: 800px;
+    }
+    p b {
+
+    }
+
+    p a {
+      color: #5993c9;
+    }
+    h1.main {
+      color: #f92472;
+    }
   </style>
 </head>
 <body>
+
+<h1 class="main">Simple Highlight</h1>
+
+<a href="https://github.com/zahard/simple-highlight"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+
+<p>This is an example page showing usage of syntax highlighting library - <b>Simple Highlight</b> 
+  for different languages and how dark and light themes are looks like.<br>
+  More details about usage and features you can find on project <a href="https://github.com/zahard/simple-highlight">GitHub page</a>
+</p>
+
 <h1>Javascript Syntax</h1>
 <div class="themes">
   <div class="theme dark">
