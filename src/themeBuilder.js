@@ -8,10 +8,10 @@ export default function (themes, mainClass, themePrefix) {
   mainClass = '.' + mainClass;
 
   var cssArr = [];
-  cssArr.push('code'+mainClass+' { font-size: initial; padding: 15px;line-height:1.4;');
+  cssArr.push('code'+mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
   cssArr.push('display: block; margin: 5px; border-radius:4px}');
   cssArr.push(mainClass + ' > pre { margin: 0;font-family: Monospace;overflow-x: auto; }');
-  cssArr.push(mainClass + ' > pre span {font-size: inherit }');
+  cssArr.push(mainClass + ' > pre span {font-size: inherit;line-height:inherit;}');
   cssArr.push(mainClass +' .sh-lines{font-size: inherit;float:left;line-height:inherit;text-align:right;margin-right:15px;left:10px;');
   cssArr.push('border-right:1px solid #ccc; padding-right: 5px;user-select: none;}');
 
