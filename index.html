@@ -11,7 +11,7 @@
       font-family: Arial;
       margin: 10px 0;
     }
-    h1 { font-size: 28px; }
+    h1 { font-size: 28px; margin-top:30px;}
     h3 { 
       border-radius: 2px;
       font-size: 20px;
@@ -40,7 +40,7 @@
 </head>
 <body>
 
-<h1>Simple Highlight themes examples</h1>
+<h1>Default Themes</h1>
 <div class="themes">
   <div class="theme dark">
     <h3>Dark</h3>
@@ -82,7 +82,7 @@ API.getJson = function() {
   </div>
   <div class="theme light">
     <h3>Light</h3>
-    <code class="simple-highlight"><pre>
+    <code class="simple-highlight sh-theme-light"><pre>
 // Factorial example function
 function factorial(n) {
   if (n == 1) {
@@ -115,6 +115,79 @@ var API = {};
 API.getJson = function() {
   // ...
 }
+    </pre></code>
+  </div>
+</div>
+<h1>Support inline JS and CSS</h1>
+<div class="themes">
+  <div class="theme dark">
+    <code class="simple-highlight sh-theme-dark" lang="html"><pre>
+<!--<head>
+  <style>
+#main p {
+  display: block;
+  position: 'relative';
+  padding-left: 250px;
+  transition: padding-left .2s ease;
+}
+.page-layout-wrapper {
+  display: block;
+  position: relative;
+  padding-left: 250px;
+  transition: padding-left .2s ease;
+  overflow: hidden;
+}
+  </style>
+<head>
+<body>
+  <ul class="hello world">
+    <li class="item-list__item">
+      <a href="{{item.link}}">
+    </li>
+  </ul>
+  <script>
+    function Hello (name, value) {
+      return name + value;
+    }
+  </script>
+</body>
+-->
+</pre></code>
+
+  </div>
+
+  <div class="theme light">
+    <code class="simple-highlight sh-theme-light" lang="html"><pre>
+<!--<head>
+  <style>
+#main p {
+  display: block;
+  position: 'relative';
+  padding-left: 250px;
+  transition: padding-left .2s ease;
+}
+.page-layout-wrapper {
+  display: block;
+  position: relative;
+  padding-left: 250px;
+  transition: padding-left .2s ease;
+  overflow: hidden;
+}
+  </style>
+<head>
+<body>
+  <ul class="hello world">
+    <li class="item-list__item">
+      <a href="{{item.link}}">
+    </li>
+  </ul>
+  <script>
+    function Hello (name, value) {
+      return name + value;
+    }
+  </script>
+</body>
+-->
     </pre></code>
   </div>
 </div>

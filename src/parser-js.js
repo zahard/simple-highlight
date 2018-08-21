@@ -14,7 +14,7 @@ function generateKeywords() {
   for (var token in tokens) {
     words = tokens[token].split('|');
     for (var i = 0; i < words.length; i++) {
-      keywords[words[i]] = token;
+      keywords[words[i]] = 'js-'+ token;
     }
   }
   return keywords;
@@ -24,12 +24,12 @@ function generateKeywords() {
 var JsParser = {
   keywords: generateKeywords(),
   nextWordModifiers: {
-    'class': 'method',
-    'extends': 'method',
-    'implements': 'method',
-    'function': 'method',
-    'new': 'globalname',
-    'console': 'globalname',
+    'class': 'js-method',
+    'extends': 'js-method',
+    'implements': 'js-method',
+    'function': 'js-method',
+    'new': 'js-globalname',
+    'console': 'js-globalname',
   },
   regEmpty: /^\s+$/,
   regNumeric: /^\-?[0-9]+$/,
@@ -47,19 +47,19 @@ var JsParser = {
 
 // All token names
 var TOKENS = {
-  comment:'comment',
-  self: 'self',
-  def: 'def',
-  args: 'args',
-  method: 'method',
-  number: 'number',
-  string: 'string',
-  operator: 'operator',
-  keyword: 'keyword',
-  blockname: 'blockname',
-  globalname: 'globalname',
-  functionCall: 'func',
-  boolean: 'boolean'
+  comment:'js-comment',
+  self: 'js-self',
+  def: 'js-def',
+  args: 'js-args',
+  method: 'js-method',
+  number: 'js-number',
+  string: 'js-string',
+  operator: 'js-operator',
+  keyword: 'js-keyword',
+  blockname: 'js-blockname',
+  globalname: 'js-globalname',
+  functionCall: 'js-func',
+  boolean: 'js-boolean'
 }
 
 JsParser.parse = function(text) {

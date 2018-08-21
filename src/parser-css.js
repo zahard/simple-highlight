@@ -8,15 +8,15 @@ var CssParser = {
   regValueNumber: /([0-9\.]+)([a-zA-Z]+)?/,
 
   TOKENS: {
-    selectorTag: 'keyword',
-    selectorClass: 'method',
-    selectorId: 'args',
-    ruleName: 'blockname',
-    ruleVal: 'blockname',
-    ruleValString: 'string',
-    ruleValUnit: 'keyword',
-    ruleValNum: 'number',
-    ruleValHash: 'none',
+    selectorTag: 'css-tag',
+    selectorClass: 'css-classname',
+    selectorId: 'css-id',
+    ruleName: 'css-name',
+    ruleVal: 'css-val',
+    ruleValString: 'css-valstr',
+    ruleValUnit: 'css-valunit',
+    ruleValNum: 'css-valnum',
+    ruleValHash: 'css-valhash',
   }
 };
 

@@ -1,6 +1,171 @@
 (function () {
   'use strict';
 
+  var themeDark = {
+    name: 'dark',
+    background: '#282923',
+    text: '#f7f7f7',
+    linesCount: '#666',
+    colors: {
+      orange: '#fd9621',
+      green: '#a6e22c',
+      darkgreen: '#438c26',
+      purple: '#ac80ff',
+      yellow: '#e7db74',
+      red: '#f92472',
+      blue: '#67d8ef',
+      grey: '#999',
+    },
+    styles: {
+      html: {
+        tag: 'red',
+        name: 'green',
+        val: 'yellow', 
+        comment: 'grey'
+      }, 
+      js: {
+        comment: 'darkgreen',
+        comment_ml: 'grey',
+        self: 'orange',
+        def: 'blue',
+        args: 'orange',
+        method: 'green',
+        number: 'purple',
+        string: 'yellow',
+        operator: 'red',
+        keyword: 'red',
+        blockname: 'blue|i',
+        globalname: 'blue|i',
+        func: 'blue',
+        boolean: 'purple'
+      },
+      css: {
+        tag: 'red',
+        classname: 'green',
+        id: 'orange',
+        name: 'blue|i',
+        val: 'blue|i',
+        valstr: 'yellow',
+        valunit: 'red',
+        valnum: 'purple',
+        valhash: 'grey',
+        comment: 'grey',
+      }
+    }
+  };
+
+  var themeLight = {
+    name: 'light',
+    background: '#eee',
+    text: '#333',
+    linesCount: '#999',
+    colors: {
+      lightblue: '#07a',
+      green: '#690',
+      purple: '#905',
+      red: '#DD4A68',
+      grey: '#333',
+      brown: '#a67f59',
+      lightgrey:'#708090'
+    },
+    styles: {
+      html: {
+        tag: 'purple',
+        name: 'green',
+        val: 'lightblue', 
+        comment: 'grey'
+      }, 
+      js: {
+        comment_ml: 'lightgrey',
+        comment:'lightgrey',
+        self: 'lightblue',
+        def: 'lightblue',
+        args: 'grey',
+        method: 'red',
+        number: 'purple',
+        string: 'green',
+        operator: 'brown',
+        keyword: 'lightblue',
+        blockname: 'lightblue',
+        globalname: 'grey',
+        func: 'red',
+        boolean: 'purple'
+      },
+      css: {
+        tag: 'green',
+        classname: 'green',
+        id: 'green',
+        name: 'purple',
+        val: 'grey',
+        valstr: 'brown',
+        valunit: 'grey',
+        valnum: 'purple',
+        valhash: 'lightblue',
+        comment: 'lightgrey'
+      }
+    }
+  };
+
+  var colorThemes = [themeDark, themeLight];
+
+  function appendThemesStyles(themes, mainClass, themePrefix) {
+    var styleId = 'simple-higlight-styles';
+    // Styles aready added
+    if (document.getElementById(styleId)) {
+      return;
+    }
+
+    var cssArr = [];
+    cssArr.push('code'+mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
+    cssArr.push('display: block; margin: 5px; border-radius:4px}');
+    cssArr.push(mainClass + ' > pre { margin: 0;font-family: Monospace;overflow-x: auto; }');
+    cssArr.push(mainClass +' .sh-lines{float:left;line-height:inherit;text-align:right;margin-right:15px;left:10px;');
+    cssArr.push('border-right:1px solid #ccc; padding-right: 5px;user-select: none;}');
+
+    for (var t = 0; t < themes.length; t++) {
+        createThemeCss(themes[t], cssArr);
+    }
+    var css = cssArr.join('\n');
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.id = styleId;
+    if (style.styleSheet){
+      style.styleSheet.cssText = css;
+    } else {
+      style.appendChild(document.createTextNode(css));
+    }
+    head.appendChild(style);
+
+    function createThemeCss(theme, css) {
+      var prefixName = mainClass + themePrefix + theme.name;
+      css.push(prefixName + ' { background: '+theme.background+'}');
+      css.push(prefixName + ' > pre {color: '+theme.text+'}');
+      css.push(prefixName + ' .sh-lines {color: '+theme.linesCount+';border-color:'+theme.linesCount+'}');
+
+      var s, m, color, font, style, lang;
+      for (var lang in theme.styles) {
+        for (var type in theme.styles[lang]) {
+          s = theme.styles[lang][type].split('|');
+          color = s[0];
+          font = s[1];
+          style = 'color:' + theme.colors[color];
+          // If additional option exists
+          if (font) {
+            for (m = 0; m < font.length; m++) {
+              if (font[m] === 'i') {
+                style += ';font-style: italic';
+              } else if(font[m] === 'b') {
+                style += ';font-weight: bold';
+              }
+            }
+          }
+          css.push(prefixName+' .sh-'+lang+'-'+type+' {'+style+'}');
+        }
+      }
+    }
+  }
+
   function parseRegExp(obj) {
     if (!obj.text) {
       return ''
@@ -50,7 +215,7 @@
     for (var token in tokens) {
       words = tokens[token].split('|');
       for (var i = 0; i < words.length; i++) {
-        keywords[words[i]] = token;
+        keywords[words[i]] = 'js-'+ token;
       }
     }
     return keywords;
@@ -60,12 +225,12 @@
   var JsParser = {
     keywords: generateKeywords(),
     nextWordModifiers: {
-      'class': 'method',
-      'extends': 'method',
-      'implements': 'method',
-      'function': 'method',
-      'new': 'globalname',
-      'console': 'globalname',
+      'class': 'js-method',
+      'extends': 'js-method',
+      'implements': 'js-method',
+      'function': 'js-method',
+      'new': 'js-globalname',
+      'console': 'js-globalname',
     },
     regEmpty: /^\s+$/,
     regNumeric: /^\-?[0-9]+$/,
@@ -83,19 +248,19 @@
 
   // All token names
   var TOKENS = {
-    comment:'comment',
-    self: 'self',
-    def: 'def',
-    args: 'args',
-    method: 'method',
-    number: 'number',
-    string: 'string',
-    operator: 'operator',
-    keyword: 'keyword',
-    blockname: 'blockname',
-    globalname: 'globalname',
-    functionCall: 'func',
-    boolean: 'boolean'
+    comment:'js-comment',
+    self: 'js-self',
+    def: 'js-def',
+    args: 'js-args',
+    method: 'js-method',
+    number: 'js-number',
+    string: 'js-string',
+    operator: 'js-operator',
+    keyword: 'js-keyword',
+    blockname: 'js-blockname',
+    globalname: 'js-globalname',
+    functionCall: 'js-func',
+    boolean: 'js-boolean'
   };
 
   JsParser.parse = function(text) {
@@ -357,15 +522,15 @@
     regValueNumber: /([0-9\.]+)([a-zA-Z]+)?/,
 
     TOKENS: {
-      selectorTag: 'keyword',
-      selectorClass: 'method',
-      selectorId: 'args',
-      ruleName: 'blockname',
-      ruleVal: 'blockname',
-      ruleValString: 'string',
-      ruleValUnit: 'keyword',
-      ruleValNum: 'number',
-      ruleValHash: 'none',
+      selectorTag: 'css-tag',
+      selectorClass: 'css-classname',
+      selectorId: 'css-id',
+      ruleName: 'css-name',
+      ruleVal: 'css-val',
+      ruleValString: 'css-valstr',
+      ruleValUnit: 'css-valunit',
+      ruleValNum: 'css-valnum',
+      ruleValHash: 'css-valhash',
     }
   };
 
@@ -493,10 +658,10 @@
     regTagParts: /^(<\/?)([a-zA-Z\-0-9]+)([^\>]*?)(\/?>)$/,
     regAttrs: /([a-zA-Z\-\_\*\$]+)(((=)(([\'\"])[^\6]*?\6))|\s)?/g,
     TOKENS: {
-      tag: 'tag',
-      attrName: 'attrName',
-      attrVal: 'attrVal',
-      comment: 'comment',
+      tag: 'html-tag',
+      attrName: 'html-name',
+      attrVal: 'html-val',
+      comment: 'html-comment',
     }
   };
 
@@ -586,17 +751,18 @@
 
   var SimpleHighlight = {
     mainClass: '.simple-highlight',
-    themePrefix: 'sh-theme-',
+    themePrefix: '.sh-theme-',
     regEmpty: /^\s+$/,
   };
-
 
   SimpleHighlight.highlightCodeNode = function(codeNode) {
     var preNode = codeNode.querySelector('pre');
     // If pre tag wasnt found inside code
-    if (!preNode) {
+    if (!preNode || preNode.className.indexOf('.sh-processed') !== -1) {
       return;
     }
+
+    preNode.className += ' .sh-processed';
 
     // remove other tags except PRE from CODE
     for (var i = 0; i < codeNode.childNodes.length; i++) {
@@ -637,9 +803,6 @@
   };
 
   SimpleHighlight.highlightOnPage = function() {
-    // Appned styles
-    this.appendStyles(this.themes);
-
     var codeNodes = document.querySelectorAll('code' + this.mainClass);
     if (!codeNodes.length) {
       return;
@@ -663,134 +826,24 @@
     return text;
   };
 
-  SimpleHighlight.appendStyles = function(themes) {
-    var styleId = 'simple-higlight-styles';
-    // Styles aready added
-    if (document.getElementById(styleId)) {
-      return;
-    }
 
-    var cssArr = [];
-    cssArr.push('code'+this.mainClass+' { font-size: 16px; padding: 15px;line-height:1.4;');
-    cssArr.push('display: block; margin: 5px; border-radius:4px}');
-    cssArr.push(this.mainClass + ' > pre { margin: 0;font-family: Monospace;overflow-x: auto; }');
-    cssArr.push(this.mainClass +' .sh-lines{float:left;text-align:right;margin-right:15px;left:10px;');
-    cssArr.push('border-right:1px solid #ccc; padding-right: 5px;user-select: none;}');
+  // Include CSS on page
+  appendThemesStyles(colorThemes, 
+      SimpleHighlight.mainClass, 
+      SimpleHighlight.themePrefix);
 
-    for (var t = 0; t < themes.length; t++) {
-        this.createThemeCss(themes[t], cssArr);
-    }
-    var css = cssArr.join('\n');
-    var head = document.head || document.getElementsByTagName('head')[0];
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.id = styleId;
-    if (style.styleSheet){
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
-    head.appendChild(style);
-  };
-
-  SimpleHighlight.createThemeCss = function(theme, css) {
-    var prefixName = this.mainClass + '.sh-theme-' + theme.name;
-    css.push(prefixName + ' { background: '+theme.background+'}');
-    css.push(prefixName + ' > pre {color: '+theme.text+'}');
-    css.push(prefixName + ' .sh-lines {color: '+theme.linesCount+';border-color:'+theme.linesCount+'}');
-
-    var s, m, color, font, style;
-    for (var type in theme.styles) {
-      s = theme.styles[type].split('|');
-      color = s[0];
-      font = s[1];
-      style = 'color:' + theme.colors[color];
-      // If additional option exists
-      if (font) {
-        for (m = 0; m < font.length; m++) {
-          if (font[m] === 'i') {
-            style += ';font-style: italic';
-          } else if(font[m] === 'b') {
-            style += ';font-weight: bold';
-          }
-        }
-      }
-      css.push(prefixName+' .sh-'+type+' {'+style+'}');
-    }
-  };
-
-  SimpleHighlight.themes = [{
-    name: 'dark',
-    background: '#282923',
-    text: '#f7f7f7',
-    linesCount: '#666',
-    colors: {
-      orange: '#fd9621',
-      green: '#a6e22c',
-      darkgreen: '#438c26',
-      purple: '#ac80ff',
-      yellow: '#e7db74',
-      red: '#f92472',
-      blue: '#67d8ef',
-      grey: '#999',
-    },
-    styles: {
-      none: 'grey',
-      tag: 'red',
-      attrName: 'green',
-      attrVal: 'yellow',
-      comment: 'darkgreen',
-      self: 'orange',
-      def: 'blue',
-      args: 'orange',
-      method: 'green',
-      number: 'purple',
-      string: 'yellow',
-      operator: 'red',
-      keyword: 'red',
-      blockname: 'blue|i',
-      globalname: 'blue|i',
-      func: 'blue',
-      boolean: 'purple'
-    }
-  }, {
-    name: 'light',
-    background: '#eee',
-    text: '#333',
-    linesCount: '#999',
-    colors: {
-      lightblue: '#07a',
-      green: '#690',
-      purple: '#905',
-      red: '#DD4A68',
-      grey: '#333',
-      brown: '#a67f59',
-      lightgrey:'#708090'
-    },
-    styles: {
-      none: 'grey',
-      tag: 'brown',
-      attrName: 'purple',
-      attrVal: 'green',
-      comment:'lightgrey',
-      self: 'lightblue',
-      def: 'lightblue',
-      args: 'grey',
-      method: 'red',
-      number: 'purple',
-      string: 'green',
-      operator: 'brown',
-      keyword: 'lightblue',
-      blockname: 'lightblue',
-      globalname: 'grey',
-      func: 'red',
-      boolean: 'purple'
-    }
-  }];
 
   // Hightlight initially on dom ready
   document.addEventListener("DOMContentLoaded", function() {
     SimpleHighlight.highlightOnPage();
   });
+
+  window.SimpleHighlight = function(node) {
+    if (node) {
+      SimpleHighlight.highlightCodeNode(node);  
+    } else {
+      SimpleHighlight.highlightOnPage();
+    }
+  };
 
 }());

@@ -7,10 +7,10 @@ var HtmlParser = {
   regTagParts: /^(<\/?)([a-zA-Z\-0-9]+)([^\>]*?)(\/?>)$/,
   regAttrs: /([a-zA-Z\-\_\*\$]+)(((=)(([\'\"])[^\6]*?\6))|\s)?/g,
   TOKENS: {
-    tag: 'tag',
-    attrName: 'attrName',
-    attrVal: 'attrVal',
-    comment: 'comment',
+    tag: 'html-tag',
+    attrName: 'html-name',
+    attrVal: 'html-val',
+    comment: 'html-comment',
   }
 };
 
