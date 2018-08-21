@@ -1,6 +1,7 @@
 
 import HtmlParser from './parser-html';
 import JsParser from './parser-js';
+import CssParser from './parser-css';
 
 var SimpleHighlight = {
   mainClass: '.simple-highlight',
@@ -74,6 +75,8 @@ SimpleHighlight.parseCode = function(text, lang) {
       return HtmlParser.parse(text);
     case 'js':
       return JsParser.parse(text);
+    case 'css':
+      return CssParser.parse(text);
   }
   // No lang found
   return text;

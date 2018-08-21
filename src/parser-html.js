@@ -1,4 +1,5 @@
 import JsParser from './parser-js';
+import CssParser from './parser-css';
 
 var HtmlParser = {
   TOKENS: {
@@ -26,8 +27,7 @@ HtmlParser.parse = function(html) {
 
     // Process inline style tag
     if (match[0] === '</style>') {
-      return '<span class="sh-comment">'+text+'</span>';
-      //return CssParser.parse(text);
+      return CssParser.parse(text);
     }
     return text;
   });
