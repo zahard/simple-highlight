@@ -1,4 +1,6 @@
 # Simple Highlight
+![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/js.png)
+
 Simple Highlight is small and lightweight syntax higlighter library.
   - Small size
   - Easy to include, just single javascript file
@@ -10,18 +12,6 @@ Simple Highlight is small and lightweight syntax higlighter library.
 
 ## Examples
 Check it in action on this [demo page](https://zahard.github.io/simple-highlight/index.html)
-
-### Javascript
-![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/js.png)
-
-### HTML
-![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/html.png)
-
-### CSS
-![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/css.png)
-
-### Mixed languages
-![alt text](https://raw.githubusercontent.com/zahard/simple-highlight/master/img/mixed.png)
 
 ## Usage
 First include script to your page
