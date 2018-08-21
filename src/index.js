@@ -56,7 +56,7 @@ SimpleHighlight.highlightCodeNode = function(codeNode) {
   for (i = 1; i <= linesCount; i++) {
     linesHtml.push(i);
   }
-  lineEl.innerHTML = linesHtml.join('<br/>')
+  lineEl.innerHTML = linesHtml.join('<br/>');
   codeNode.insertBefore(lineEl, preNode);
 
   // If no theme selected - apply default
